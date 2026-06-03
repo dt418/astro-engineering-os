@@ -1,7 +1,6 @@
 # Astro Engineering OS
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](./CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-active--development-yellow.svg)](./docs/architecture.md)
 [![Node](https://img.shields.io/badge/node-%E2%89%A520-339933.svg)](./package.json)
 [![Astro](https://img.shields.io/badge/Astro-4.0%2B-FF5D01.svg)](https://astro.build)
@@ -47,9 +46,9 @@ AI agent coordination, skill routing, and workflow coordination.
 
 The orchestrator **must never** implement, review, or generate architecture directly. Delegation is mandatory.
 
-### Layer 3 — Engineering Harness (future, reserved)
+### Layer 3 — Engineering Harness (reserved)
 
-Validators, auditors, policies, automation, and quality gates. **Not implemented in v1** by design — focus is establishing a strong foundation first. Reserved directories:
+Validators, auditors, policies, automation, and quality gates. **Reserved for a future release** by design — focus is establishing a strong foundation first. The five reserved directories are:
 
 - `validators/` — automated policy and standard enforcement
 - `auditors/` — continuous compliance and drift detection
@@ -142,13 +141,16 @@ pnpm generate:agents
 pnpm exec generate-repo
 ```
 
-The generator reads `repository.manifest.json` and self-embedded content constants to produce all 13 layers. Existing files are preserved unless `--force` is passed.
+The generator reads `repository.manifest.json` and self-embedded content constants to produce all 14 modules (13 content + shared types). Existing files are preserved unless `--force` is passed.
 
 ## Requirements
 
+**OS runtime:**
 - Node.js 20+ (uses `--experimental-strip-types`)
-- Astro 4.0+
 - TypeScript 5.6+
+
+**Generated projects (downstream):**
+- Astro 4.0+
 
 ## Documentation
 
@@ -165,10 +167,10 @@ The generator reads `repository.manifest.json` and self-embedded content constan
 
 ```
 astro-engineering-os/
-├── .github/                    # PR template, 3 issue templates, 2 CI workflows
+├── .github/                    # PULL_REQUEST_TEMPLATE.md + 3 issue templates + 2 CI workflows
 ├── orchestrator/               # Layer 2 — astro-orchestrator.md (delegation only)
 ├── agents/                     # Layer 2 — architect, implementer, reviewer, documentation
-├── skills/                     # Layer 1 — astro-core + 4 packs + 8 specializations
+├── skills/                     # Layer 1 — 13 surfaces: astro-core + 4 packs + 8 specializations
 ├── governance/                 # Layer 1 — 7 normative documents
 ├── reviewers/                  # Layer 1 — 6 reviewer specs
 ├── workflows/                  # Layer 1 — 5 process workflows
@@ -183,7 +185,7 @@ astro-engineering-os/
 ├── scripts/                    # TypeScript bootstrap generator + content modules
 │   ├── generate-repository.ts
 │   ├── shared/
-│   └── generators/             # 13 self-embedded content modules
+│   └── generators/             # 14 self-embedded modules: 13 content + types.ts
 ├── repository.manifest.json    # Authoritative source of truth for all layers
 ├── package.json                # Generator entry point + per-layer npm scripts
 ├── tsconfig.json               # Strict TypeScript configuration
