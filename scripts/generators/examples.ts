@@ -13,7 +13,7 @@ Runnable examples that demonstrate the patterns from the skills.
 
 | Example | Skill | Description |
 | --- | --- | --- |
-| \`astro-core-hello/\` | astro-core | A minimal Astro site with SSG, content collections, and an `.astro` page |
+| \`astro-core-hello/\` | astro-core | A minimal Astro site with SSG, content collections, and an \`.astro\` page |
 | \`astro-blog-example/\` | astro-blog | A blog with RSS, sitemap, structured data |
 | \`astro-cloudflare-binding/\` | astro-cloudflare | A site that reads from a Cloudflare KV binding |
 

@@ -40,8 +40,8 @@ export function displayPath(absolutePath: string, root: string = process.cwd()):
   return relative(root, absolutePath) || '.';
 }
 
-export function ensureParentDirectory(filePath: string): Promise<void> {
-  return mkdir(dirname(filePath), { recursive: true });
+export async function ensureParentDirectory(filePath: string): Promise<void> {
+  await mkdir(dirname(filePath), { recursive: true });
 }
 
 export interface PathMapping {

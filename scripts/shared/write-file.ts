@@ -97,7 +97,11 @@ export async function writeFiles(
 }> {
   const results: WriteFileResult[] = [];
   for (const file of files) {
-    const result = await writeFileIfChanged({ ...file, root: options.root, strict: options.strict });
+    const result = await writeFileIfChanged({
+      ...file,
+      ...(options.root !== undefined ? { root: options.root } : {}),
+      ...(options.strict !== undefined ? { strict: options.strict } : {}),
+    });
     results.push(result);
   }
   const summary = {

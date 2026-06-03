@@ -36,9 +36,9 @@ The orchestrator **MUST NEVER**:
 - Implement features directly (no code writing)
 - Perform reviews directly (no scoring or approval)
 - Generate architecture directly (no ADRs, no component design)
-- Write code without delegating to the `implementer` agent
-- Approve PRs without `reviewer` agent input
-- Author documentation without `documentation` agent input
+- Write code without delegating to the \`implementer\` agent
+- Approve PRs without \`reviewer\` agent input
+- Author documentation without \`documentation\` agent input
 - Bypass governance or reviewer thresholds
 - Execute workflows in parallel when they have ordering dependencies
 
