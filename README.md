@@ -19,6 +19,24 @@ It helps:
 
 ## Architecture: Three Layers
 
+```mermaid
+flowchart TB
+    L3["<b>Layer 3 — Engineering Harness</b><br/><i>reserved</i><br/>Validators · Auditors · Policies · Automation · Quality Gates"]
+    L2["<b>Layer 2 — Agent Orchestration</b><br/><i>active</i><br/>Orchestrator · 4 Agents · Skill routing · Workflow coordination"]
+    L1["<b>Layer 1 — Engineering OS</b><br/><i>foundation</i><br/>Skills · Governance · Reviewers · Workflows · ADRs · Docs · Templates"]
+
+    L2 -->|enforces via agents| L1
+    L3 -.->|will consume| L2
+
+    classDef reserved fill:#fff5e1,stroke:#b07a1a,color:#5a3a0a
+    classDef active fill:#e1f0ff,stroke:#1a5fb0,color:#0a3a5a
+    classDef foundation fill:#e8f5e9,stroke:#2e7d32,color:#1b3a1c
+
+    class L1 foundation
+    class L2 active
+    class L3 reserved
+```
+
 ### Layer 1 — Engineering OS (foundation)
 
 Production standards, governance, and review systems.

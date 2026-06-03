@@ -4,26 +4,22 @@ Astro Engineering OS is organized as a **three-layer operating system**. This do
 
 ## Three-Layer Model
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│ Layer 3 — Engineering Harness (reserved)                     │
-│  Validators · Auditors · Policies · Automation · Quality Gates│
-│  → Continuous enforcement, drift detection, automation      │
-└──────────────────────────────────────────────────────────────┘
-                          ▲
-                          │ consumes
-┌──────────────────────────────────────────────────────────────┐
-│ Layer 2 — Agent Orchestration (active)                       │
-│  Orchestrator · 4 Agents · Skill routing · Workflow coord.   │
-│  → AI-native execution: analyze, route, delegate, aggregate  │
-└──────────────────────────────────────────────────────────────┘
-                          ▲
-                          │ enforces
-┌──────────────────────────────────────────────────────────────┐
-│ Layer 1 — Engineering OS (foundation)                        │
-│  Skills · Governance · Reviewers · Workflows · ADRs · Docs   │
-│  → Normative knowledge, standards, and process definitions   │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    L3["<b>Layer 3 — Engineering Harness</b><br/><i>reserved</i><br/>Validators · Auditors · Policies · Automation · Quality Gates<br/><br/><i>→ Continuous enforcement, drift detection, automation</i>"]
+    L2["<b>Layer 2 — Agent Orchestration</b><br/><i>active</i><br/>Orchestrator · 4 Agents · Skill routing · Workflow coordination<br/><br/><i>→ AI-native execution: analyze, route, delegate, aggregate</i>"]
+    L1["<b>Layer 1 — Engineering OS</b><br/><i>foundation</i><br/>Skills · Governance · Reviewers · Workflows · ADRs · Docs · Templates<br/><br/><i>→ Normative knowledge, standards, and process definitions</i>"]
+
+    L2 -->|enforces via agents| L1
+    L3 -.->|will consume| L2
+
+    classDef reserved fill:#fff5e1,stroke:#b07a1a,color:#5a3a0a
+    classDef active fill:#e1f0ff,stroke:#1a5fb0,color:#0a3a5a
+    classDef foundation fill:#e8f5e9,stroke:#2e7d32,color:#1b3a1c
+
+    class L1 foundation
+    class L2 active
+    class L3 reserved
 ```
 
 ## Layer 1 — Engineering OS
@@ -100,14 +96,52 @@ The orchestrator selects skill packs per request:
 - **Domain pack (per project type):** blog | docs | saas | ecommerce
 - **Specialization packs (per requirement):** performance | security | SEO | cloudflare
 
+```mermaid
+flowchart TD
+    R[Incoming engineering request] --> P{Project type?}
+    P -->|Blog| D1[blog pack]
+    P -->|Docs| D2[docs pack]
+    P -->|SaaS| D3[saas pack]
+    P -->|E-commerce| D4[ecommerce pack]
+    P -->|Unknown| D5[General patterns only]
+
+    D1 --> C[+ astro-core always]
+    D2 --> C
+    D3 --> C
+    D4 --> C
+    D5 --> C
+
+    C --> S{Specializations required?}
+    S -->|Performance| X1[astro-performance]
+    S -->|Security| X2[astro-security]
+    S -->|SEO| X3[astro-seo]
+    S -->|Cloudflare| X4[astro-cloudflare]
+    S -->|None| A[Route to agents]
+
+    X1 --> A
+    X2 --> A
+    X3 --> A
+    X4 --> A
+```
+
 ### Workflow Coordination
 
-Three execution modes:
+Four execution modes:
 
 - **Sequential** — Architect → Implementer → Reviewer → Documentation
 - **Parallel** — independent tasks run concurrently
 - **Coordinated** — multiple agents work on the same artifact
 - **Escalation** — orchestrator surfaces items that exceed agent authority
+
+```mermaid
+flowchart LR
+    O[Orchestrator]
+
+    O -->|Sequential| S["Architect → Implementer → Reviewer → Documentation"]
+    O -->|Parallel| P["Independent tasks run concurrently"]
+    O -->|Coordinated| C["Multiple agents on same artifact"]
+    O -->|Escalation| E["Items exceeding agent authority surface to human reviewer"]
+```
 
 ## Layer 3 — Engineering Harness (Reserved)
 
@@ -145,17 +179,29 @@ Building Harness infrastructure before Layer 1 and Layer 2 are stable produces l
 
 Organize code by feature, not by technical layer:
 
-```
-src/features/
-├── auth/
-│   ├── components/
-│   ├── actions/
-│   ├── lib/
-│   └── types/
-└── products/
-    ├── components/
-    ├── actions/
-    └── lib/
+```mermaid
+flowchart TB
+    subgraph SRC[src/features/]
+        direction TB
+        AUTH[auth/]
+        PROD[products/]
+    end
+
+    subgraph AUTH_TREE[auth]
+        A1[components/]
+        A2[actions/]
+        A3[lib/]
+        A4[types/]
+    end
+
+    subgraph PROD_TREE[products]
+        P1[components/]
+        P2[actions/]
+        P3[lib/]
+    end
+
+    AUTH --> AUTH_TREE
+    PROD --> PROD_TREE
 ```
 
 ### 2. Explicit Dependencies
@@ -213,10 +259,15 @@ Architecture, governance, and workflow decisions are reversible until merged. Ir
 
 ### Data Flow
 
-```
-Page → Loader → Data → Component
-          ↓
-      Action → Validation → Handler → Response
+```mermaid
+flowchart LR
+    Page --> Loader
+    Loader --> Data
+    Data --> Component
+    Loader --> Action
+    Action --> Validation
+    Validation --> Handler
+    Handler --> Response
 ```
 
 ### State Management
@@ -233,12 +284,10 @@ Page → Loader → Data → Component
 
 ### Hierarchy
 
-```
-layouts/              # Page wrappers, meta
-    ↓
-feature-components/   # Feature-specific UI
-    ↓
-ui/                   # Reusable primitives
+```mermaid
+flowchart TB
+    L["layouts/<br/>Page wrappers, meta"] --> F["feature-components/<br/>Feature-specific UI"]
+    F --> U["ui/<br/>Reusable primitives"]
 ```
 
 ### Patterns
@@ -293,10 +342,12 @@ export const api = createApiClient({
 
 ### Auth Flow
 
-```
-Request → Middleware → Session Check → Route Handler
-                      ↓
-                Unauthorized → Redirect
+```mermaid
+flowchart LR
+    R[Request] --> M[Middleware]
+    M --> S{Session check}
+    S -->|Authorized| H[Route handler]
+    S -->|Unauthorized| X[Redirect]
 ```
 
 ### Data Protection
@@ -365,3 +416,25 @@ Request → Middleware → Session Check → Route Handler
 ### Activating Layer 3 Subsystems
 
 Each Layer 3 directory's README defines promotion criteria. When met, move the subsystem from `reserved` to `active` and implement the planned components.
+
+### Generator Pipeline
+
+The bootstrap generator is the mechanism that materializes the entire OS from a manifest and self-embedded content. This is also the mechanism that powers all of the "Adding X" extension patterns above — every new skill, reviewer, workflow, agent, or domain pack is registered in `repository.manifest.json` and emitted by a generator module.
+
+```mermaid
+flowchart LR
+    M["repository.manifest.json<br/><i>authoritative source of truth</i>"] --> G[generate-repository.ts]
+    C["scripts/generators/*.ts<br/><i>self-embedded content constants</i>"] --> G
+    S["shared/write-file.ts<br/>shared/write-directory.ts"] --> G
+    G -->|reads| FS[Target filesystem]
+    G -->|preserves existing| E["--force flag<br/><i>overwrite</i>"]
+    G -->|writes| O["14 modules<br/>13 content + types.ts"]
+
+    classDef source fill:#fff5e1,stroke:#b07a1a,color:#5a3a0a
+    classDef engine fill:#e1f0ff,stroke:#1a5fb0,color:#0a3a5a
+    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b3a1c
+
+    class M,C source
+    class G,S engine
+    class FS,E,O output
+```
