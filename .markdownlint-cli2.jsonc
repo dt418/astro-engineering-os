@@ -1,0 +1,10 @@
+{
+  "globs": ["**/*.md"],
+  "ignores": ["**/SKILL.md"],
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD028": false,
+    "MD060": false
+  }
+}
