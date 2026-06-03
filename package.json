@@ -16,6 +16,8 @@
     "generate:adr": "node --experimental-strip-types scripts/generate-repository.ts --only adr",
     "generate:github": "node --experimental-strip-types scripts/generate-repository.ts --only github",
     "generate:docs": "node --experimental-strip-types scripts/generate-repository.ts --only docs",
+    "generate:agents": "node --experimental-strip-types scripts/generate-repository.ts --only agents",
+    "generate:orchestrator": "node --experimental-strip-types scripts/generate-repository.ts --only orchestrator",
     "generate:templates": "node --experimental-strip-types scripts/generate-repository.ts --only templates",
     "generate:examples": "node --experimental-strip-types scripts/generate-repository.ts --only examples",
     "generate:hooks": "node --experimental-strip-types scripts/generate-repository.ts --only hooks",

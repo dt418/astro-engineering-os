@@ -24,6 +24,8 @@ import * as workflows from './generators/workflows.ts';
 import * as adr from './generators/adr.ts';
 import * as github from './generators/github.ts';
 import * as docs from './generators/docs.ts';
+import * as agents from './generators/agents.ts';
+import * as orchestrator from './generators/orchestrator.ts';
 
 const generators = {
   skills,
@@ -33,6 +35,8 @@ const generators = {
   adr,
   github,
   docs,
+  agents,
+  orchestrator,
 };
 
 /**
@@ -97,14 +101,20 @@ Astro Engineering OS Bootstrap Generator
 Usage: npx tsx scripts/generate-repository.ts [options] [targets...]
 
 Targets:
-  all        Generate everything (default)
-  skills     Generate skills
-  governance Generate governance documents
-  reviewers  Generate reviewers
-  workflows  Generate workflows
-  adr        Generate ADRs
-  github     Generate GitHub templates
-  docs       Generate documentation
+  all           Generate everything (default)
+  skills        Generate skills (astro-core + packs + specializations)
+  governance    Generate governance documents
+  reviewers     Generate reviewers
+  workflows     Generate workflows
+  adr           Generate ADRs
+  github        Generate GitHub templates
+  docs          Generate documentation
+  agents        Generate agent specifications (architect, implementer, reviewer, documentation)
+  orchestrator  Generate orchestrator specification
+  templates     Generate ADR/RFC/spec/refactor templates
+  examples      Generate example projects
+  hooks         Generate git hooks and install script
+  schemas       Generate Zod/JSON schema definitions
 
 Options:
   --force, -f     Overwrite existing files

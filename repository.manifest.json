@@ -123,7 +123,7 @@
       },
       {
         "name": "docs",
-        "file": "skills/astro-core/packs/blog/SKILL.md",
+        "file": "skills/astro-core/packs/docs/SKILL.md",
         "extends": "astro-core",
         "domain": "documentation sites"
       },
@@ -257,16 +257,12 @@
     }
   ],
   "templates": [
-    "templates/blog",
-    "templates/docs",
-    "templates/saas",
-    "templates/ecommerce"
+    "templates/adr",
+    "templates/rfc",
+    "templates/spec",
+    "templates/refactor"
   ],
   "schemas": [
-    {
-      "name": "repository-manifest",
-      "file": "schemas/repository-manifest.json"
-    },
     {
       "name": "skill",
       "file": "schemas/skill.json"
