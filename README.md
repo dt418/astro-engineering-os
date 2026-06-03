@@ -164,10 +164,12 @@ The generator reads `repository.manifest.json` and self-embedded content constan
 ## Requirements
 
 **OS runtime:**
+
 - Node.js 20+ (uses `--experimental-strip-types`)
 - TypeScript 5.6+
 
 **Generated projects (downstream):**
+
 - Astro 4.0+
 
 ## Documentation
@@ -183,7 +185,7 @@ The generator reads `repository.manifest.json` and self-embedded content constan
 
 ## Repository Structure
 
-```
+```text
 astro-engineering-os/
 ├── .github/                    # PULL_REQUEST_TEMPLATE.md + 3 issue templates + 2 CI workflows
 ├── orchestrator/               # Layer 2 — astro-orchestrator.md (delegation only)

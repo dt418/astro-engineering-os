@@ -139,7 +139,7 @@ Workflows define the process for common engineering tasks.
 
 ## Refactoring Workflow
 
-### Assessment
+### Code Smell Audit
 
 - Identify code smells
 - Plan decomposition
