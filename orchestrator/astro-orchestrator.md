@@ -1,5 +1,7 @@
 # Astro Orchestrator
 
+> **Audience:** AI agents (primary) + Humans (orchestrator authors)
+
 The Astro Orchestrator is the central coordination layer for AI agents working on Astro projects. It analyzes requests, routes to appropriate agents, and coordinates workflows without implementing features directly.
 
 ## Purpose

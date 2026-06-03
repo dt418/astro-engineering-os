@@ -1,5 +1,7 @@
 # Migration Workflow
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This workflow defines the process for migrating existing projects to Astro or upgrading between Astro versions.

@@ -1,5 +1,7 @@
 # Getting Started with Astro Engineering OS
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 A comprehensive guide to getting started with Astro Engineering OS.
 
 ## Overview

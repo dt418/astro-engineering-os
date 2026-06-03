@@ -1,5 +1,7 @@
 # Implementer Agent
 
+> **Audience:** AI agents (primary) + Humans (agent authors)
+
 The Implementer Agent is responsible for translating architectural designs into production-ready code, executing refactoring tasks, and generating code following Astro best practices.
 
 ## Purpose

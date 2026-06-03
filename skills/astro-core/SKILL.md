@@ -1,5 +1,7 @@
 # Astro Core Skill
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 The foundational skill for Astro projects. Provides framework knowledge covering rendering strategies, content management, data handling, performance optimization, and Cloudflare integration.
 
 ## Purpose

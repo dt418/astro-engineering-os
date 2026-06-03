@@ -1,5 +1,7 @@
 # Component Governance
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This document defines component design standards, patterns, and anti-patterns for Astro projects.

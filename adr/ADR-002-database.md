@@ -1,5 +1,7 @@
 # ADR-002: Database Strategy
 
+> **Audience:** Humans (architects, maintainers)
+
 **Status:** Accepted
 **Date:** 2024-01-15
 **Deciders:** Astro Engineering OS Team

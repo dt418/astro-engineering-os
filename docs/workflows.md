@@ -1,5 +1,7 @@
 # Workflows Guide
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 Standardized engineering processes for Astro Engineering OS.
 
 ## Overview

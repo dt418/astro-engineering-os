@@ -1,5 +1,7 @@
 # Validators (Layer 3 — Reserved)
 
+> **Audience:** Humans (Layer 3 future maintainers)
+
 > **Status:** Reserved architecture. Not implemented in the initial release.
 > Intentional to keep the v1 foundation small, focused, and free of premature infrastructure.
 

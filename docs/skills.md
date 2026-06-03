@@ -1,5 +1,7 @@
 # Skills Guide
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 Learn how to use and create skills in Astro Engineering OS.
 
 ## Overview

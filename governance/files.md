@@ -1,5 +1,7 @@
 # File Governance
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This document defines file organization, naming conventions, and structural standards for Astro Engineering OS projects.

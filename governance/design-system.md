@@ -1,5 +1,7 @@
 # Design System Governance
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This document defines design system architecture, component standards, and visual consistency rules for Astro Engineering OS projects.

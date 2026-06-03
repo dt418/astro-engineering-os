@@ -1,5 +1,7 @@
 # Governance Guide
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 Standards and rules for Astro Engineering OS projects.
 
 ## Overview

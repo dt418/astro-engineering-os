@@ -1,5 +1,7 @@
 # Reviewer Agent
 
+> **Audience:** AI agents (primary) + Humans (agent authors)
+
 The Reviewer Agent provides comprehensive review capabilities across multiple dimensions: architecture, security, performance, and accessibility.
 
 ## Purpose

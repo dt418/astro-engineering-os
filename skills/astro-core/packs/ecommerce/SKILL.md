@@ -1,5 +1,7 @@
 # E-commerce Pack
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Extends `astro-core` with patterns specific to e-commerce applications.
 
 ## Purpose

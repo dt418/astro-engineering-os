@@ -1,5 +1,7 @@
 # Agents Guide
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 AI agent system for Astro Engineering OS.
 
 ## Overview

@@ -1,5 +1,7 @@
 # Architecture Governance
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This document defines architectural rules, patterns, and standards for Astro Engineering OS projects. All architectural decisions must comply with these guidelines.

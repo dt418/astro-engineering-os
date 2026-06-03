@@ -1,5 +1,7 @@
 # Dependency Governance
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This document defines dependency management, version control, and security standards for Astro Engineering OS projects.

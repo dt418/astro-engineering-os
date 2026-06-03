@@ -1,5 +1,7 @@
 # Architect Agent
 
+> **Audience:** AI agents (primary) + Humans (agent authors)
+
 The Architect Agent is responsible for high-level design, strategic planning, and architectural decisions for Astro projects.
 
 ## Purpose

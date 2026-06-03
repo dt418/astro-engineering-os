@@ -1,5 +1,7 @@
 # SaaS Pack
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Extends `astro-core` with patterns specific to SaaS (Software as a Service) applications.
 
 ## Purpose

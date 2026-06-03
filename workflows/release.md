@@ -1,5 +1,7 @@
 # Release Workflow
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This workflow defines the process for releasing new versions of Astro Engineering OS, ensuring quality, consistency, and traceability.

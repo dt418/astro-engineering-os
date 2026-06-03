@@ -5,6 +5,8 @@ description: Security patterns for Astro — CSP, session cookies, CSRF, rate li
 
 # Astro Security
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for building Astro applications that are secure by default. Security is treated as an engineering surface with concrete, verifiable requirements — not a checklist executed at the end of a project.
 
 ## Purpose

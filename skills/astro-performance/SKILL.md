@@ -5,6 +5,8 @@ description: Performance engineering for Astro — Core Web Vitals, asset budget
 
 # Astro Performance
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for keeping Astro sites fast by default and diagnosing regressions when they happen. Performance is treated as an engineering surface, not a marketing metric.
 
 ## Purpose

@@ -5,6 +5,8 @@ description: SaaS application patterns in Astro — marketing site + authenticat
 
 # Astro SaaS
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for SaaS products where a static marketing site, a documentation site, and an authenticated application live in the same repository — and where rendering, security, and performance budgets differ sharply between zones.
 
 ## Purpose

@@ -1,5 +1,7 @@
 # Refactoring Workflow
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This workflow defines the process for refactoring existing code in Astro Engineering OS projects, ensuring maintainability without breaking functionality.

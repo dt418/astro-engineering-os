@@ -1,5 +1,7 @@
 # Blog Pack
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Extends `astro-core` with patterns specific to blog and content-focused websites.
 
 ## Purpose

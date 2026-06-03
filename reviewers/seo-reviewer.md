@@ -1,5 +1,7 @@
 # SEO Reviewer
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 Automated SEO compliance checking for Astro projects.
 
 ## Review Objectives

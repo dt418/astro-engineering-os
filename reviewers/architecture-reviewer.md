@@ -1,5 +1,7 @@
 # Architecture Reviewer
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 Automated architectural compliance checking for Astro projects.
 
 ## Review Objectives

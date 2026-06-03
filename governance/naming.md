@@ -1,5 +1,7 @@
 # Naming Governance
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This document defines consistent naming conventions across all code, files, and identifiers in Astro Engineering OS projects.

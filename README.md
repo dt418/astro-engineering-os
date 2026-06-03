@@ -1,5 +1,7 @@
 # Astro Engineering OS
 
+> **Audience:** Humans (project users, evaluators, contributors)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-active--development-yellow.svg)](./docs/architecture.md)
 [![Node](https://img.shields.io/badge/node-%E2%89%A520-339933.svg)](./package.json)

@@ -1,5 +1,7 @@
 # Contributor Covenant Code of Conduct
 
+> **Audience:** Humans (project contributors and community members)
+
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our

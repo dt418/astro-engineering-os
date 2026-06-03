@@ -1,5 +1,7 @@
 # Features Governance
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This document defines feature architecture patterns, module boundaries, and feature management for Astro Engineering OS projects.

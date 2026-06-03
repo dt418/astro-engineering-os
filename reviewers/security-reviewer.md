@@ -1,5 +1,7 @@
 # Security Reviewer
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 Automated security compliance checking for Astro projects.
 
 ## Review Objectives

@@ -5,6 +5,8 @@ description: E-commerce patterns for Astro — catalog, product detail, cart, ch
 
 # Astro E-commerce
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for storefronts where the product catalog, browsing, and SEO surfaces must be fast, while cart, checkout, and order management are dynamic and high-integrity.
 
 ## Purpose

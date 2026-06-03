@@ -5,6 +5,8 @@ description: Documentation site patterns for Astro — Starlight, content collec
 
 # Astro Docs
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for technical documentation sites: product docs, SDK references, design system documentation, internal wikis, developer portals.
 
 ## Purpose

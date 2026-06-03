@@ -1,5 +1,7 @@
 # Feature Development Workflow
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This workflow defines the process for developing new features in Astro Engineering OS projects, from initial concept through implementation and deployment.

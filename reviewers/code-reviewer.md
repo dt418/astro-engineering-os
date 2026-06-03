@@ -1,5 +1,7 @@
 # Code Reviewer
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 Automated code quality compliance checking for Astro projects.
 
 ## Review Objectives

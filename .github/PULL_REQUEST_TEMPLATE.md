@@ -1,5 +1,7 @@
 # Pull Request Template
 
+> **Audience:** Humans (contributors opening pull requests)
+
 ## Description
 
 <!-- Brief description of what this PR does and why -->

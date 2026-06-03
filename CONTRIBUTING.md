@@ -1,5 +1,7 @@
 # Contributing to Astro Engineering OS
 
+> **Audience:** Humans (project contributors)
+
 Thank you for your interest in contributing to Astro Engineering OS.
 
 ## Ways to Contribute

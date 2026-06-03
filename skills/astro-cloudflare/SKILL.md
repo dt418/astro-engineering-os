@@ -5,6 +5,8 @@ description: Cloudflare-specific patterns for Astro — Workers adapter, KV, R2,
 
 # Astro Cloudflare
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for running Astro on Cloudflare. The Cloudflare runtime is the target, not a generic "deploy target." Bindings, edge rendering, and KV-backed sessions are first-class.
 
 ## Purpose

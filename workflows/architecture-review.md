@@ -1,5 +1,7 @@
 # Architecture Review Workflow
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 ## Purpose
 
 This workflow defines the process for reviewing architectural decisions, ensuring they comply with governance standards and project requirements.

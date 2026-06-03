@@ -1,5 +1,7 @@
 # Documentation Agent
 
+> **Audience:** AI agents (primary) + Humans (agent authors)
+
 The Documentation Agent is responsible for generating, maintaining, and updating project documentation including READMEs, ADRs, architecture docs, and migration guides.
 
 ## Purpose

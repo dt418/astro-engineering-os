@@ -5,6 +5,8 @@ description: Search engine optimization patterns for Astro — metadata, OpenGra
 
 # Astro SEO
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for building Astro sites that are easy for crawlers to discover, index, and rank. SEO is treated as an engineering discipline with measurable outcomes, not a post-launch checklist.
 
 ## Purpose

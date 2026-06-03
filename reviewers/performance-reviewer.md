@@ -1,5 +1,7 @@
 # Performance Reviewer
 
+> **Audience:** Humans (contributors, reviewers) + AI agents
+
 Automated performance compliance checking for Astro projects.
 
 ## Review Objectives

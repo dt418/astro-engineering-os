@@ -1,5 +1,7 @@
 # Reviewers Guide
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 Automated review systems for Astro Engineering OS.
 
 ## Overview

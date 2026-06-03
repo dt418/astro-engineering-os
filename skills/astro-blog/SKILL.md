@@ -5,6 +5,8 @@ description: Blog and content-site patterns for Astro — content collections, R
 
 # Astro Blog
 
+> **Audience:** AI agents (primary) + Humans (skill authors)
+
 Patterns for content sites where the primary surface is time-ordered written work: blogs, newsletters, changelogs, release notes, essays.
 
 ## Purpose

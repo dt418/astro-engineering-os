@@ -1,5 +1,7 @@
 # Orchestrator Guide
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 The central coordination layer for AI agents.
 
 ## Overview

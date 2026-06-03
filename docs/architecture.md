@@ -1,5 +1,7 @@
 # Architecture Guide
 
+> **Audience:** Humans (project users, contributors) + AI agents
+
 Astro Engineering OS is organized as a **three-layer operating system**. This document explains each layer, their responsibilities, and how they interact.
 
 ## Three-Layer Model
