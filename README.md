@@ -1,5 +1,11 @@
 # Astro Engineering OS
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](./CHANGELOG.md)
+[![Status](https://img.shields.io/badge/status-active--development-yellow.svg)](./docs/architecture.md)
+[![Node](https://img.shields.io/badge/node-%E2%89%A520-339933.svg)](./package.json)
+[![Astro](https://img.shields.io/badge/Astro-4.0%2B-FF5D01.svg)](https://astro.build)
+
 A production-grade **engineering operating system** for Astro projects and AI coding agents. Not a project template — a complete OS for building, governing, reviewing, and orchestrating Astro applications at scale.
 
 ## Overview
@@ -18,7 +24,7 @@ It helps:
 
 Production standards, governance, and review systems.
 
-- **Skills** — framework knowledge (astro-core + 4 domain packs + 5 specializations)
+- **Skills** — framework knowledge (astro-core + 4 domain packs + 8 specializations)
 - **Governance** — 7 normative documents (architecture, components, files, dependencies, design-system, features, naming)
 - **Reviewers** — 6 reviewer specs (architecture, security, performance, accessibility, SEO, code)
 - **Workflows** — 5 process workflows (feature-development, architecture-review, migration, release, refactoring)
@@ -136,7 +142,7 @@ pnpm generate:agents
 pnpm exec generate-repo
 ```
 
-The generator reads `repository.manifest.json` and self-embedded content constants to produce all 11 layers. Existing files are preserved unless `--force` is passed.
+The generator reads `repository.manifest.json` and self-embedded content constants to produce all 13 layers. Existing files are preserved unless `--force` is passed.
 
 ## Requirements
 
@@ -154,6 +160,45 @@ The generator reads `repository.manifest.json` and self-embedded content constan
 - [Workflows](/docs/workflows.md)
 - [Agents](/docs/agents.md)
 - [Orchestrator](/docs/orchestrator.md)
+
+## Repository Structure
+
+```
+astro-engineering-os/
+├── .github/                    # PR template, 3 issue templates, 2 CI workflows
+├── orchestrator/               # Layer 2 — astro-orchestrator.md (delegation only)
+├── agents/                     # Layer 2 — architect, implementer, reviewer, documentation
+├── skills/                     # Layer 1 — astro-core + 4 packs + 8 specializations
+├── governance/                 # Layer 1 — 7 normative documents
+├── reviewers/                  # Layer 1 — 6 reviewer specs
+├── workflows/                  # Layer 1 — 5 process workflows
+├── adr/                        # Layer 1 — 7 architecture decision records
+├── docs/                       # Layer 1 — getting-started, architecture, surface index
+├── templates/                  # Layer 1 — adr, rfc, spec, refactor
+├── validators/                 # Layer 3 (reserved) — automated policy enforcement
+├── auditors/                   # Layer 3 (reserved) — continuous compliance + drift
+├── policies/                   # Layer 3 (reserved) — declarative rule specifications
+├── automation/                 # Layer 3 (reserved) — scaffolders, generators, transformers
+├── quality-gates/              # Layer 3 (reserved) — merge-blocking enforcement
+├── scripts/                    # TypeScript bootstrap generator + content modules
+│   ├── generate-repository.ts
+│   ├── shared/
+│   └── generators/             # 13 self-embedded content modules
+├── repository.manifest.json    # Authoritative source of truth for all layers
+├── package.json                # Generator entry point + per-layer npm scripts
+├── tsconfig.json               # Strict TypeScript configuration
+├── LICENSE                     # MIT
+├── CHANGELOG.md                # Release history
+├── CONTRIBUTING.md             # Contribution guide
+└── CODE_OF_CONDUCT.md          # Community standards
+```
+
+## Project
+
+- [License (MIT)](./LICENSE)
+- [Changelog](./CHANGELOG.md)
+- [Contributing](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
 
 ## License
 
