@@ -1,0 +1,163 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: '[FEATURE] '
+labels: ['enhancement', 'triage']
+assignees: []
+projects: []
+milestone: ''
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+
+        Thanks for taking the time to suggest a new feature!
+
+        Please fill out as much detail as possible to help us evaluate your request.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A brief summary of the feature request (1-2 sentences).
+      placeholder: |
+        Brief summary of the feature request in one or two sentences.
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: |
+        **Describe the problem**
+        Describe the problem this feature would solve.
+        
+        **Who is affected?**
+        Who would benefit from this feature?
+        
+        **Current workaround**
+        What is the current workaround for this problem?
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: |
+        **Describe your ideal solution**
+        Describe what you want to happen.
+        
+        **Describe alternatives**
+        Describe any alternative solutions or approaches you've considered.
+        
+        **Constraints**
+        Are there any constraints or requirements?
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: |
+        **User Stories**
+        Describe user stories or use cases for this feature.
+        
+        1. As a [role], I want to [action] so that [benefit]
+        2. As a [role], I want to [action] so that [benefit]
+        
+        **User Interactions**
+        Describe how users would interact with this feature.
+        
+        **Edge Cases**
+        Describe any edge cases that should be considered.
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: design
+    attributes:
+      label: Design & Mockups
+      description: |
+        **Wireframes/Mockups**
+        If you have any mockups, wireframes, or design ideas, please attach or describe them here.
+        
+        **Related Designs**
+        Link to any related Figma files, designs, or references.
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: |
+        Define clear acceptance criteria for this feature.
+        
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+      render: markdown
+    validations:
+      required: false
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      description: How would this feature impact the project?
+      options:
+        - Low - Nice to have, minimal impact
+        - Medium - Useful improvement, moderate impact
+        - High - Major feature, significant impact
+        - Critical - Must have for release
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: Implementation Notes
+      description: |
+        **Technical Approach**
+        Describe any technical implementation notes or considerations.
+        
+        **Dependencies**
+        List any dependencies this feature might require.
+        
+        **Risks**
+        Identify any potential risks or concerns.
+      render: markdown
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched for similar features
+          required: true
+        - label: I understand this is a suggestion, not a commitment
+          required: true
+        - label: I am willing to help implement this feature if approved
+          required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the feature request here.
+      placeholder: |
+        Any other relevant information...
+      render: markdown
+    validations:
+      required: false

@@ -1,0 +1,31 @@
+{
+  "name": "@astro-engineering-os/generator",
+  "version": "1.0.0",
+  "description": "Bootstrap generator for the Astro Engineering OS",
+  "type": "module",
+  "bin": {
+    "generate-repo": "./scripts/generate-repository.ts"
+  },
+  "scripts": {
+    "generate": "node --experimental-strip-types scripts/generate-repository.ts",
+    "generate:list": "node --experimental-strip-types scripts/generate-repository.ts --list",
+    "generate:skills": "node --experimental-strip-types scripts/generate-repository.ts --only skills",
+    "generate:governance": "node --experimental-strip-types scripts/generate-repository.ts --only governance",
+    "generate:reviewers": "node --experimental-strip-types scripts/generate-repository.ts --only reviewers",
+    "generate:workflows": "node --experimental-strip-types scripts/generate-repository.ts --only workflows",
+    "generate:adr": "node --experimental-strip-types scripts/generate-repository.ts --only adr",
+    "generate:github": "node --experimental-strip-types scripts/generate-repository.ts --only github",
+    "generate:docs": "node --experimental-strip-types scripts/generate-repository.ts --only docs",
+    "generate:templates": "node --experimental-strip-types scripts/generate-repository.ts --only templates",
+    "generate:examples": "node --experimental-strip-types scripts/generate-repository.ts --only examples",
+    "generate:hooks": "node --experimental-strip-types scripts/generate-repository.ts --only hooks",
+    "generate:schemas": "node --experimental-strip-types scripts/generate-repository.ts --only schemas",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

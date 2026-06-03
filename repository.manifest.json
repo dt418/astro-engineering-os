@@ -1,0 +1,295 @@
+{
+  "name": "astro-engineering-os",
+  "version": "1.0.0",
+  "description": "Engineering Operating System for Astro projects and AI coding agents",
+  "layers": {
+    "layer1": {
+      "name": "Engineering OS",
+      "components": [
+        "skills",
+        "governance", 
+        "reviewers",
+        "workflows",
+        "adr",
+        "templates"
+      ]
+    },
+    "layer2": {
+      "name": "Agent Orchestration",
+      "components": [
+        "orchestrator",
+        "agents",
+        "skill-routing",
+        "workflow-coordination"
+      ]
+    },
+    "layer3": {
+      "name": "Engineering Harness",
+      "components": [
+        "validators",
+        "auditors",
+        "policies",
+        "automation",
+        "quality-gates"
+      ],
+      "status": "reserved"
+    }
+  },
+  "orchestrator": {
+    "name": "Astro Orchestrator",
+    "file": "orchestrator/astro-orchestrator.md",
+    "responsibilities": [
+      "analyze incoming requests",
+      "identify project type",
+      "select skill packs",
+      "select agents",
+      "coordinate workflows",
+      "aggregate outputs"
+    ],
+    "constraints": [
+      "never implement features directly",
+      "never perform reviews directly",
+      "never generate architecture directly",
+      "delegation is mandatory"
+    ]
+  },
+  "agents": [
+    {
+      "name": "architect",
+      "file": "agents/architect.md",
+      "purpose": "Architecture design and strategic planning",
+      "responsibilities": [
+        "architecture decisions",
+        "rendering strategy selection",
+        "folder structure design",
+        "data strategy definition"
+      ]
+    },
+    {
+      "name": "implementer",
+      "file": "agents/implementer.md",
+      "purpose": "Code implementation and refactoring",
+      "responsibilities": [
+        "feature implementation",
+        "refactoring execution",
+        "code generation",
+        "test writing"
+      ]
+    },
+    {
+      "name": "reviewer",
+      "file": "agents/reviewer.md",
+      "purpose": "Code and architecture review",
+      "responsibilities": [
+        "architecture review",
+        "performance review",
+        "security review",
+        "accessibility review"
+      ]
+    },
+    {
+      "name": "documentation",
+      "file": "agents/documentation.md",
+      "purpose": "Documentation generation and maintenance",
+      "responsibilities": [
+        "README generation",
+        "ADR creation",
+        "architecture documentation",
+        "migration guides"
+      ]
+    }
+  ],
+  "skills": {
+    "core": {
+      "name": "astro-core",
+      "file": "skills/astro-core/SKILL.md",
+      "description": "Framework knowledge base for Astro",
+      "modules": [
+        "rendering",
+        "content",
+        "data",
+        "performance",
+        "cloudflare",
+        "decision-frameworks",
+        "tradeoff-analysis"
+      ]
+    },
+    "packs": [
+      {
+        "name": "blog",
+        "file": "skills/astro-core/packs/blog/SKILL.md",
+        "extends": "astro-core",
+        "domain": "blog and content sites"
+      },
+      {
+        "name": "docs",
+        "file": "skills/astro-core/packs/blog/SKILL.md",
+        "extends": "astro-core",
+        "domain": "documentation sites"
+      },
+      {
+        "name": "saas",
+        "file": "skills/astro-core/packs/saas/SKILL.md",
+        "extends": "astro-core",
+        "domain": "SaaS applications"
+      },
+      {
+        "name": "ecommerce",
+        "file": "skills/astro-core/packs/ecommerce/SKILL.md",
+        "extends": "astro-core",
+        "domain": "e-commerce applications"
+      }
+    ]
+  },
+  "governance": [
+    {
+      "name": "architecture",
+      "file": "governance/architecture.md"
+    },
+    {
+      "name": "components",
+      "file": "governance/components.md"
+    },
+    {
+      "name": "files",
+      "file": "governance/files.md"
+    },
+    {
+      "name": "dependencies",
+      "file": "governance/dependencies.md"
+    },
+    {
+      "name": "design-system",
+      "file": "governance/design-system.md"
+    },
+    {
+      "name": "features",
+      "file": "governance/features.md"
+    },
+    {
+      "name": "naming",
+      "file": "governance/naming.md"
+    }
+  ],
+  "reviewers": [
+    {
+      "name": "architecture",
+      "file": "reviewers/architecture-reviewer.md"
+    },
+    {
+      "name": "security",
+      "file": "reviewers/security-reviewer.md"
+    },
+    {
+      "name": "performance",
+      "file": "reviewers/performance-reviewer.md"
+    },
+    {
+      "name": "accessibility",
+      "file": "reviewers/accessibility-reviewer.md"
+    },
+    {
+      "name": "seo",
+      "file": "reviewers/seo-reviewer.md"
+    },
+    {
+      "name": "code",
+      "file": "reviewers/code-reviewer.md"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "feature-development",
+      "file": "workflows/feature-development.md"
+    },
+    {
+      "name": "architecture-review",
+      "file": "workflows/architecture-review.md"
+    },
+    {
+      "name": "migration",
+      "file": "workflows/migration.md"
+    },
+    {
+      "name": "release",
+      "file": "workflows/release.md"
+    },
+    {
+      "name": "refactoring",
+      "file": "workflows/refactoring.md"
+    }
+  ],
+  "adr": [
+    {
+      "id": "ADR-001",
+      "name": "rendering",
+      "file": "adr/ADR-001-rendering.md"
+    },
+    {
+      "id": "ADR-002",
+      "name": "database",
+      "file": "adr/ADR-002-database.md"
+    },
+    {
+      "id": "ADR-003",
+      "name": "authentication",
+      "file": "adr/ADR-003-authentication.md"
+    },
+    {
+      "id": "ADR-004",
+      "name": "content",
+      "file": "adr/ADR-004-content.md"
+    },
+    {
+      "id": "ADR-005",
+      "name": "caching",
+      "file": "adr/ADR-005-caching.md"
+    },
+    {
+      "id": "ADR-006",
+      "name": "deployment",
+      "file": "adr/ADR-006-deployment.md"
+    },
+    {
+      "id": "ADR-007",
+      "name": "design-system",
+      "file": "adr/ADR-007-design-system.md"
+    }
+  ],
+  "templates": [
+    "templates/blog",
+    "templates/docs",
+    "templates/saas",
+    "templates/ecommerce"
+  ],
+  "schemas": [
+    {
+      "name": "repository-manifest",
+      "file": "schemas/repository-manifest.json"
+    },
+    {
+      "name": "skill",
+      "file": "schemas/skill.json"
+    },
+    {
+      "name": "workflow",
+      "file": "schemas/workflow.json"
+    },
+    {
+      "name": "adr",
+      "file": "schemas/adr.json"
+    }
+  ],
+  "github": {
+    "workflows": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/release.yml"
+    ],
+    "templates": [
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".github/ISSUE_TEMPLATE/bug.yml",
+      ".github/ISSUE_TEMPLATE/feature.yml",
+      ".github/ISSUE_TEMPLATE/refactor.yml"
+    ]
+  }
+}

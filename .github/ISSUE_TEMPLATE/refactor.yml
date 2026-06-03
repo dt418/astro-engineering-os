@@ -1,0 +1,185 @@
+name: Refactoring Request
+description: Suggest a code or architecture refactoring
+title: '[REFACTOR] '
+labels: ['refactoring', 'triage']
+assignees: []
+projects: []
+milestone: ''
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Refactoring Request
+
+        Thanks for suggesting a refactoring!
+
+        Please provide detailed information about the code that needs refactoring and why.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A brief summary of the refactoring (1-2 sentences).
+      placeholder: |
+        Brief summary of the refactoring in one or two sentences.
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-issues
+    attributes:
+      label: Current Issues
+      description: |
+        **Code Smells**
+        Describe the specific code smells or issues:
+        
+        - [ ] God component/file
+        - [ ] Long function
+        - [ ] Duplication
+        - [ ] Complex naming
+        - [ ] Poor testability
+        - [ ] Other
+        
+        **Specific Locations**
+        File paths and line numbers of code to refactor.
+        
+        ```
+        src/components/Button.tsx (450 lines)
+        src/lib/data-processing.ts (complex function)
+        ```
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact-analysis
+    attributes:
+      label: Impact Analysis
+      description: |
+        **Performance Impact**
+        Will this refactoring affect performance? How?
+        
+        **Breaking Changes**
+        Will this refactoring introduce breaking changes? To what?
+        
+        **Risk Assessment**
+        What is the risk level of this refactoring?
+        
+        - Low - Safe refactoring, easy to rollback
+        - Medium - Some risk, requires testing
+        - High - Significant risk, requires careful handling
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-approach
+    attributes:
+      label: Proposed Approach
+      description: |
+        **Decomposition Plan**
+        How will you break down the refactoring?
+        
+        1. Step 1
+        2. Step 2
+        3. Step 3
+        
+        **Target State**
+        What should the code look like after refactoring?
+        
+        **Extraction Plan**
+        What will be extracted and where?
+        
+        - Component: `src/components/ui/Button.tsx`
+        - Hook: `src/hooks/useCounter.ts`
+        - Utility: `src/lib/formatters.ts`
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Target Metrics
+      description: |
+        **Current Metrics**
+        - Lines: 
+        - Complexity: 
+        - Coverage: 
+        - Bundle size: 
+        
+        **Target Metrics**
+        - Lines: 
+        - Complexity: 
+        - Coverage: 
+        - Bundle size: 
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: |
+        **Affected Components**
+        What other components will be affected?
+        
+        **Dependent Code**
+        What code depends on what will be refactored?
+        
+        **Migration Path**
+        How will dependent code be migrated?
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: rollback-plan
+    attributes:
+      label: Rollback Plan
+      description: |
+        **How to Rollback**
+        Describe the procedure to rollback if issues are found.
+        
+        **Checkpoints**
+        What are the checkpoints during refactoring to verify correctness?
+      render: markdown
+    validations:
+      required: false
+
+  - type: input
+    id: estimated-effort
+    attributes:
+      label: Estimated Effort
+      description: How many hours/days will this take?
+      placeholder: e.g., 8 hours
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Tests will be written before refactoring
+          required: true
+        - label: No functionality will be changed
+          required: true
+        - label: Backward compatibility will be maintained
+          required: false
+        - label: Documentation will be updated
+          required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the refactoring here.
+      placeholder: |
+        Any other relevant information...
+      render: markdown
+    validations:
+      required: false

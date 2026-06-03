@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workflow Schema",
+  "description": "Schema for workflow definition files",
+  "type": "object",
+  "required": ["name", "purpose", "process"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Workflow name"
+    },
+    "purpose": {
+      "type": "string",
+      "description": "Workflow purpose statement"
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "array", "items": { "type": "string" } },
+        "optional": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "process": {
+      "type": "array",
+      "description": "Ordered phases of the workflow",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "steps": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "deliverables": { "type": "array", "items": { "type": "string" } },
+        "artifacts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "successCriteria": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "decisionPoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "condition": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Skill Schema",
+  "description": "Schema for skill definition files in Astro Engineering OS",
+  "type": "object",
+  "required": ["name", "version", "description"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Skill name in kebab-case"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief skill description"
+    },
+    "purpose": {
+      "type": "string",
+      "description": "Detailed purpose statement"
+    },
+    "modules": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Knowledge modules covered"
+    },
+    "extends": {
+      "type": "string",
+      "description": "Parent skill if this extends another"
+    },
+    "responsibilities": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "decisionRules": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "antiPatterns": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
