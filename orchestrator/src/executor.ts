@@ -70,7 +70,7 @@ export function createExecutor(config: ExecutorConfig): Executor {
               lastError = toError(err);
               if (attempt < maxAttempts) {
                 finalNode.attempts = attempt;
-                finalNode = sm.transition(finalNode, 'running');
+                // state is already 'running' from the initial transition; no need to re-transition
               }
             }
           }

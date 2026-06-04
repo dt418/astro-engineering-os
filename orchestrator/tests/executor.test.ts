@@ -64,4 +64,34 @@ describe('Executor', () => {
     await exec.execute(nodes);
     expect(maxActive).toBeLessThanOrEqual(2);
   });
+
+  it('retries on transient failure and completes', async () => {
+    let calls = 0;
+    const flaky = {
+      get: (name: string) => ({
+        name,
+        async execute(node: TaskNode) {
+          calls++;
+          if (calls === 1) {
+            throw new Error('transient');
+          }
+          return { output: `ok:${node.input.task}`, durationMs: 5 };
+        },
+      }),
+      list: () => ['flaky'],
+    };
+    const exec = createExecutor({ agents: flaky as never, concurrency: 1 });
+    const node: TaskNode = {
+      id: 't1' as TaskId,
+      rule: 'r',
+      input: { task: 'flaky-task' },
+      state: 'ready',
+      dependsOn: [],
+      attempts: 0,
+    };
+    const [result] = await exec.execute([node]);
+    expect(result!.state).toBe('completed');
+    expect(result!.attempts).toBe(1);
+    expect(calls).toBe(2);
+  });
 });
