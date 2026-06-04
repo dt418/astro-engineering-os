@@ -60,5 +60,3 @@ export async function runCli(args: string[]): Promise<void> {
       process.exit(1);
   }
 }
-
-runCli(process.argv.slice(2));
