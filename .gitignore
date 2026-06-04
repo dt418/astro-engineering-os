@@ -61,3 +61,6 @@ temp/
 
 # graphify knowledge-graph artifacts (regenerable, large binary JSON+HTML)
 graphify-out/
+
+# Worktrees (isolated development workspaces)
+.worktrees/
