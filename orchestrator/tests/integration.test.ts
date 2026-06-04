@@ -28,3 +28,16 @@ describe('phase 1 integration', () => {
     expect(node.input.task).toBe('implement-auth');
   });
 });
+
+describe('phase 2 integration', () => {
+  it('runs task through executor with builtin agents', async () => {
+    const { createBuiltinAgents } = await import('../src/agents/builtin.js');
+    const { createExecutor } = await import('../src/executor.js');
+    const agents = createBuiltinAgents();
+    const exec = createExecutor({ agents, concurrency: 2 });
+    const node = await createOrchestrator({ rulesPath: RULES_PATH }).run('implement-auth');
+    const results = await exec.execute([node]);
+    expect(results[0]!.state).toBe('completed');
+    expect(results[0]!.result?.output).toBeDefined();
+  });
+});
