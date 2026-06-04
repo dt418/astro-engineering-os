@@ -1,16 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { createOrchestrator } from '../src/index.js';
-import { runCli } from '../src/cli.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+const RULES_PATH = join(import.meta.dirname, '..', 'fixtures', 'astro-orchestrator.md');
+
 describe('phase 1 integration', () => {
   it('orchestrator loads real rules file', () => {
-    const md = readFileSync(
-      join(import.meta.dirname, '..', '..', 'orchestrator', 'astro-orchestrator.md'),
-      'utf-8',
-    );
-    const orch = createOrchestrator({ rulesPath: join(import.meta.dirname, '..', '..', 'orchestrator', 'astro-orchestrator.md') });
+    const md = readFileSync(RULES_PATH, 'utf-8');
+    expect(md).toContain('## rule:');
+    const orch = createOrchestrator({ rulesPath: RULES_PATH });
     const rules = orch.listRules();
     expect(rules.length).toBeGreaterThan(0);
   });
@@ -23,9 +22,7 @@ describe('phase 1 integration', () => {
   });
 
   it('end-to-end: create, run, inspect', async () => {
-    const orch = createOrchestrator({
-      rulesPath: join(import.meta.dirname, '..', '..', 'orchestrator', 'astro-orchestrator.md'),
-    });
+    const orch = createOrchestrator({ rulesPath: RULES_PATH });
     const node = await orch.run('implement-auth');
     expect(node.state).toBe('ready');
     expect(node.input.task).toBe('implement-auth');
