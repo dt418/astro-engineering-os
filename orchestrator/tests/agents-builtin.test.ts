@@ -31,6 +31,6 @@ describe('builtin agents', () => {
     };
     const result = await agents.get('implementer')!.execute(node);
     expect(result.output).toBeDefined();
-    expect(result.durationMs).toBeGreaterThanOrEqual(0);
+    expect(result.durationMs).toBeGreaterThanOrEqual(1);
   });
 });

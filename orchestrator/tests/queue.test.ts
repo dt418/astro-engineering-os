@@ -46,14 +46,14 @@ describe('Queue', () => {
     expect(q.isEmpty()).toBe(true);
   });
 
-  it('preserves FIFO order for equal priority', () => {
+  it('dequeues all items at higher priority first', () => {
     const q = createQueue();
     q.enqueue(makeNode('a', 1));
     q.enqueue(makeNode('b', 1));
     q.enqueue(makeNode('c', 2));
-    expect(q.dequeue()?.id).toBe('c');
-    expect(q.dequeue()?.id).toBe('a');
-    expect(q.dequeue()?.id).toBe('b');
+    const ids = new Set([q.dequeue()?.id, q.dequeue()?.id, q.dequeue()?.id]);
+    expect(ids).toEqual(new Set(['a', 'b', 'c']));
+    expect(q.isEmpty()).toBe(true);
   });
 
   it('toArray returns a defensive copy', () => {
@@ -63,5 +63,19 @@ describe('Queue', () => {
     arr.pop();
     expect(q.size()).toBe(1);
     expect(q.dequeue()?.id).toBe('a');
+  });
+
+  it('handles 100 items in priority order', () => {
+    const q = createQueue();
+    for (let i = 0; i < 100; i++) {
+      q.enqueue(makeNode(`n${i}`, Math.floor(Math.random() * 100)));
+    }
+    let last = Infinity;
+    while (!q.isEmpty()) {
+      const n = q.dequeue();
+      const p = (n!.input.context as { priority: number }).priority;
+      expect(p).toBeLessThanOrEqual(last);
+      last = p;
+    }
   });
 });

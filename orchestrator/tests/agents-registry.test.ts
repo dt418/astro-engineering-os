@@ -27,4 +27,10 @@ describe('AgentRegistry', () => {
     reg.register({ ...mockAgent, name: 'other' });
     expect(reg.list()).toEqual(['mock', 'other']);
   });
+
+  it('throws on duplicate registration', () => {
+    const reg = createAgentRegistry();
+    reg.register(mockAgent);
+    expect(() => reg.register(mockAgent)).toThrow(/already registered/);
+  });
 });

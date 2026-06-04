@@ -118,9 +118,9 @@ describe('Executor', () => {
     };
     const [result] = await exec.execute([node]);
     expect(result!.state).toBe('failed');
-    expect(result!.attempts).toBe(1);
+    expect(result!.attempts).toBe(2);
     expect(result!.result?.error?.code).toBe('TRANSIENT');
-    expect(calls).toBe(2);
+    expect(calls).toBe(3);
   });
 
   it('marks task failed with FATAL error when no agent matches', async () => {
@@ -142,5 +142,65 @@ describe('Executor', () => {
     expect(result!.state).toBe('failed');
     expect(result!.result?.error?.code).toBe('FATAL');
     expect(result!.result?.error?.message).toContain('No agent for: implementer');
+  });
+
+  it('classifies TypeError as FATAL and skips retries', async () => {
+    let calls = 0;
+    const typeFails = {
+      get: (_name: string) => ({
+        name: 'tf',
+        async execute(_node: TaskNode) {
+          calls++;
+          throw new TypeError('bad config');
+        },
+      }),
+      list: () => ['tf'],
+    };
+    const exec = createExecutor({ agents: typeFails as never, concurrency: 1 });
+    const node: TaskNode = {
+      id: 't1' as TaskId,
+      rule: 'r',
+      input: { task: 'cfg' },
+      state: 'ready',
+      dependsOn: [],
+      attempts: 0,
+    };
+    const [result] = await exec.execute([node]);
+    expect(result!.state).toBe('failed');
+    expect(result!.result?.error?.code).toBe('FATAL');
+    expect(calls).toBe(1);
+  });
+
+  it('throws when concurrency < 1', () => {
+    const agents = createBuiltinAgents();
+    expect(() => createExecutor({ agents, concurrency: 0 })).toThrow(
+      /concurrency must be >= 1/,
+    );
+  });
+
+  it('honors rule.agent from the rules table', async () => {
+    const agents = createBuiltinAgents();
+    const exec = createExecutor({
+      agents,
+      concurrency: 1,
+      rules: [
+        {
+          id: 'custom-rule',
+          pattern: 'custom-*',
+          agent: 'reviewer',
+          priority: 1,
+        },
+      ],
+    });
+    const node: TaskNode = {
+      id: 't1' as TaskId,
+      rule: 'custom-rule',
+      input: { task: 'custom-thing' },
+      state: 'ready',
+      dependsOn: [],
+      attempts: 0,
+    };
+    const [result] = await exec.execute([node]);
+    expect(result!.result?.output).toMatchObject({ type: 'review' });
   });
 });

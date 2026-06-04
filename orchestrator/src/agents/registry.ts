@@ -16,6 +16,9 @@ export function createAgentRegistry(): AgentRegistry {
 
   return {
     register(agent) {
+      if (agents.has(agent.name)) {
+        throw new Error(`Agent already registered: ${agent.name}`);
+      }
       agents.set(agent.name, agent);
     },
     get(name) {

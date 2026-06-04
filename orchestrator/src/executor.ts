@@ -1,4 +1,4 @@
-import type { TaskNode, TaskError } from './types.js';
+import type { TaskNode, TaskError, RoutingRule } from './types.js';
 import { createStateMachine } from './state.js';
 import type { AgentRegistry } from './agents/registry.js';
 
@@ -6,22 +6,43 @@ export interface ExecutorConfig {
   agents: AgentRegistry;
   concurrency: number;
   maxAttempts?: number;
+  rules?: RoutingRule[];
 }
 
 export interface Executor {
   execute(nodes: TaskNode[]): Promise<TaskNode[]>;
 }
 
+function classifyError(err: unknown): TaskError['code'] {
+  if (err instanceof TypeError) return 'FATAL';
+  return 'TRANSIENT';
+}
+
 function toError(err: unknown): TaskError {
+  const code = classifyError(err);
   if (err instanceof Error) {
-    return { code: 'TRANSIENT', message: err.message, cause: err };
+    return { code, message: err.message, cause: err, causeMessage: err.message };
   }
-  return { code: 'TRANSIENT', message: String(err) };
+  return { code, message: String(err) };
+}
+
+function resolveAgentName(ruleId: string, rules?: RoutingRule[]): string {
+  if (rules) {
+    const match = rules.find((r) => r.id === ruleId);
+    if (match?.agent) return match.agent;
+  }
+  if (ruleId.startsWith('implement-')) return 'implementer';
+  if (ruleId.startsWith('review-')) return 'reviewer';
+  if (ruleId.startsWith('design-')) return 'architect';
+  return 'implementer';
 }
 
 export function createExecutor(config: ExecutorConfig): Executor {
-  const { agents, concurrency } = config;
-  const maxAttempts = config.maxAttempts ?? 2;
+  const { agents, concurrency, rules } = config;
+  if (concurrency < 1) {
+    throw new Error('concurrency must be >= 1');
+  }
+  const maxAttempts = config.maxAttempts ?? 3;
   const sm = createStateMachine();
 
   return {
@@ -34,14 +55,7 @@ export function createExecutor(config: ExecutorConfig): Executor {
           const i = index++;
           const node = nodes[i];
           if (!node) continue;
-          const rule = node.rule;
-          const agentName = rule.startsWith('implement-')
-            ? 'implementer'
-            : rule.startsWith('review-')
-              ? 'reviewer'
-              : rule.startsWith('design-')
-                ? 'architect'
-                : 'implementer';
+          const agentName = resolveAgentName(node.rule, rules);
           const agent = agents.get(agentName);
           if (!agent) {
             const failed = sm.transition(node, 'failed');
@@ -68,9 +82,9 @@ export function createExecutor(config: ExecutorConfig): Executor {
             } catch (err) {
               attempt++;
               lastError = toError(err);
+              if (lastError.code === 'FATAL') break;
               if (attempt < maxAttempts) {
                 finalNode.attempts = attempt;
-                // state is already 'running' from the initial transition; no need to re-transition
               }
             }
           }
