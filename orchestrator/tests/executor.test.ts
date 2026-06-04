@@ -94,4 +94,53 @@ describe('Executor', () => {
     expect(result!.attempts).toBe(1);
     expect(calls).toBe(2);
   });
+
+  it('marks task failed after exhausting all attempts', async () => {
+    let calls = 0;
+    const alwaysFails = {
+      get: (name: string) => ({
+        name,
+        async execute(_node: TaskNode) {
+          calls++;
+          throw new Error('persistent failure');
+        },
+      }),
+      list: () => ['always-fails'],
+    };
+    const exec = createExecutor({ agents: alwaysFails as never, concurrency: 1 });
+    const node: TaskNode = {
+      id: 't1' as TaskId,
+      rule: 'r',
+      input: { task: 'doomed-task' },
+      state: 'ready',
+      dependsOn: [],
+      attempts: 0,
+    };
+    const [result] = await exec.execute([node]);
+    expect(result!.state).toBe('failed');
+    expect(result!.attempts).toBe(1);
+    expect(result!.result?.error?.code).toBe('TRANSIENT');
+    expect(calls).toBe(2);
+  });
+
+  it('marks task failed with FATAL error when no agent matches', async () => {
+    const emptyRegistry = {
+      get: (_name: string) => null,
+      list: () => [],
+      register: (_agent: never) => {},
+    };
+    const exec = createExecutor({ agents: emptyRegistry, concurrency: 1 });
+    const node: TaskNode = {
+      id: 't1' as TaskId,
+      rule: 'unknown-rule',
+      input: { task: 'orphan-task' },
+      state: 'ready',
+      dependsOn: [],
+      attempts: 0,
+    };
+    const [result] = await exec.execute([node]);
+    expect(result!.state).toBe('failed');
+    expect(result!.result?.error?.code).toBe('FATAL');
+    expect(result!.result?.error?.message).toContain('No agent for: implementer');
+  });
 });
