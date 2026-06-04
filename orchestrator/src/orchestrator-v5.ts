@@ -1,4 +1,5 @@
 import { resolve } from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { loadSkillsRegistry, type SkillsRegistry } from './registry/skills.registry.js';
 import { loadAgentsRegistry, type AgentsRegistry } from './registry/agents.registry.js';
 import { loadWorkflowsRegistry, type WorkflowsRegistry } from './registry/workflows.registry.js';
@@ -10,6 +11,12 @@ import type { Classification } from './runtime/types.js';
 import type { Agent, Reviewer, Skill, Workflow } from './registry/types.js';
 import type { Intent } from './routing/types.js';
 import { UnknownIntentError, UnresolvedCapabilityError } from './orchestrator-v5.errors.js';
+import { ExecutionEngine } from './runtime/execution-engine.js';
+import type { TaskType } from './runtime/execution-task.js';
+import type { Executor } from './executors/skill-executor.js';
+import { SkillExecutor } from './executors/skill-executor.js';
+import { WorkflowExecutor, ReviewerExecutor } from './executors/workflow-reviewer-executor.js';
+import type { ExecutionResult } from './runtime/execution-result.js';
 
 export interface PlanningRequest {
   input: string;
@@ -33,6 +40,18 @@ export interface ExecutionPlan {
   };
 }
 
+export interface ExecutionRequest {
+  readonly input: string;
+  readonly context?: Readonly<Record<string, unknown>>;
+}
+
+export interface ExecutionResponse {
+  readonly requestId: string;
+  readonly classification: Classification;
+  readonly plan: ExecutionPlan;
+  readonly result: ExecutionResult;
+}
+
 export interface OrchestratorV5Deps {
   skills: SkillsRegistry;
   agents: AgentsRegistry;
@@ -40,6 +59,7 @@ export interface OrchestratorV5Deps {
   reviewers: ReviewersRegistry;
   intents: IntentsRegistry;
   classifier: IntentClassifier;
+  executionEngine?: ExecutionEngine;
 }
 
 export class OrchestratorV5 {
@@ -49,6 +69,7 @@ export class OrchestratorV5 {
   readonly reviewers: ReviewersRegistry;
   readonly intents: IntentsRegistry;
   readonly classifier: IntentClassifier;
+  readonly engine: ExecutionEngine;
 
   constructor(deps: OrchestratorV5Deps) {
     this.skills = deps.skills;
@@ -57,6 +78,15 @@ export class OrchestratorV5 {
     this.reviewers = deps.reviewers;
     this.intents = deps.intents;
     this.classifier = deps.classifier;
+    this.engine =
+      deps.executionEngine ??
+      new ExecutionEngine(
+        new Map<TaskType, Executor>([
+          ['skill', new SkillExecutor(deps.skills)],
+          ['workflow', new WorkflowExecutor(deps.workflows)],
+          ['reviewer', new ReviewerExecutor(deps.reviewers)],
+        ] as const),
+      );
   }
 
   classify(input: string): Classification {
@@ -107,6 +137,28 @@ export class OrchestratorV5 {
       },
     };
   }
+
+  async execute(request: ExecutionRequest): Promise<ExecutionResponse> {
+    return this.executeAsync(request);
+  }
+
+  async executeAsync(request: ExecutionRequest): Promise<ExecutionResponse> {
+    const built = this.#buildExecutionResponse(request);
+    return { requestId: built.requestId, classification: built.classification, plan: built.plan, result: await built.result };
+  }
+
+  #buildExecutionResponse(request: ExecutionRequest): {
+    requestId: string;
+    classification: Classification;
+    plan: ExecutionPlan;
+    result: Promise<ExecutionResult>;
+  } {
+    const requestId = randomUUID();
+    const classification = this.classifier.classify(request.input);
+    const plan = this.plan({ input: request.input, context: request.context });
+    const result = this.engine.execute(plan, requestId);
+    return { requestId, classification, plan, result };
+  }
 }
 
 export interface CreateOrchestratorOptions {
@@ -128,6 +180,14 @@ export async function createOrchestratorV5(
 
   validateCrossReferences({ skills, agents, workflows, reviewers, intents });
 
+  const engine = new ExecutionEngine(
+    new Map<TaskType, Executor>([
+      ['skill', new SkillExecutor(skills)],
+      ['workflow', new WorkflowExecutor(workflows)],
+      ['reviewer', new ReviewerExecutor(reviewers)],
+    ] as const),
+  );
+
   return new OrchestratorV5({
     skills,
     agents,
@@ -135,6 +195,7 @@ export async function createOrchestratorV5(
     reviewers,
     intents,
     classifier: createIntentClassifier(),
+    executionEngine: engine,
   });
 }
 
