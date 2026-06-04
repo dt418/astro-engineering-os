@@ -1,10 +1,10 @@
 {
   "name": "astro-orchestrator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Multi-agent orchestration runtime for astro-engineering-os",
   "type": "module",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.10.0"
   },
   "types": "./dist/index.d.ts",
   "bin": {
@@ -19,7 +19,6 @@
   "scripts": {
     "build": "tsc",
     "postbuild": "chmod +x dist/bin.js",
-    "start:mcp": "node dist/mcp/server.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
@@ -28,7 +27,7 @@
     "lint:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "better-sqlite3": "^11.0.0"
+    "better-sqlite3": "~11.5.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",

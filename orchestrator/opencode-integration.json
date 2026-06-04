@@ -1,11 +1,16 @@
 {
   "name": "astro-orchestrator",
-  "version": "0.1.0",
-  "type": "mcp-server",
-  "entry": "./dist/mcp/server.js",
+  "version": "0.2.0",
+  "type": "library",
+  "entry": "./dist/index.js",
+  "mcp": {
+    "type": "library",
+    "note": "stdio transport pending; use createMcpServer() in-process until then",
+    "module": "./dist/mcp/server.js"
+  },
   "tools": [
-    { "name": "run_task", "description": "Run a task" },
-    { "name": "list_tasks", "description": "List rules" },
-    { "name": "get_status", "description": "Get status" }
+    { "name": "run_task", "description": "Route and execute a task" },
+    { "name": "list_tasks", "description": "List routing rules" },
+    { "name": "get_status", "description": "Look up recent execution state by id" }
   ]
 }

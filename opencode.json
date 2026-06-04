@@ -4,7 +4,8 @@
     "astro-orchestrator": {
       "type": "local",
       "command": ["node", "./orchestrator/dist/mcp/server.js"],
-      "enabled": true
+      "enabled": false,
+      "disabledReason": "stdio transport pending — use createMcpServer() in-process until transport is added"
     }
   }
 }

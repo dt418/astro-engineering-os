@@ -40,7 +40,7 @@ export function parseRules(markdown: string): RoutingRule[] {
         continue;
       }
 
-      const val = coerceValue(valRaw);
+      const val = coerceValue(valRaw!);
 
       if (inConfig) {
         if (rule.config) {

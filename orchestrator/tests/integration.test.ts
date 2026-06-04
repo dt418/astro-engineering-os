@@ -1,9 +1,16 @@
-import { describe, it, expect } from 'vitest';
-import { createOrchestrator } from '../src/index.js';
-import { readFileSync } from 'node:fs';
+import { describe, it, expect, afterEach } from 'vitest';
+import { createOrchestrator, createOrchestratorAsync } from '../src/index.js';
+import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createBuiltinAgents } from '../src/agents/builtin.js';
+import { createExecutor } from '../src/executor.js';
 
 const RULES_PATH = join(import.meta.dirname, '..', 'fixtures', 'astro-orchestrator.md');
+let dir: string;
+afterEach(() => {
+  if (dir) rmSync(dir, { recursive: true, force: true });
+});
 
 describe('phase 1 integration', () => {
   it('orchestrator loads real rules file', () => {
@@ -26,16 +33,17 @@ describe('phase 1 integration', () => {
     const node = await orch.run('implement-auth');
     expect(node.state).toBe('ready');
     expect(node.input.task).toBe('implement-auth');
+    expect(node.id).toMatch(/^t-[0-9a-f-]{36}$/i);
   });
 });
 
 describe('phase 2 integration', () => {
   it('runs task through executor with builtin agents', async () => {
-    const { createBuiltinAgents } = await import('../src/agents/builtin.js');
-    const { createExecutor } = await import('../src/executor.js');
     const agents = createBuiltinAgents();
     const exec = createExecutor({ agents, concurrency: 2 });
-    const node = await createOrchestrator({ rulesPath: RULES_PATH }).run('implement-auth');
+    const node = await createOrchestrator({ rulesPath: RULES_PATH }).run(
+      'implement-auth',
+    );
     const results = await exec.execute([node]);
     expect(results[0]!.state).toBe('completed');
     expect(results[0]!.result?.output).toBeDefined();
@@ -44,14 +52,10 @@ describe('phase 2 integration', () => {
 
 describe('phase 3 integration', () => {
   it('async orchestrator records to history', async () => {
-    const { createOrchestratorAsync } = await import('../src/index.js');
-    const { mkdtempSync } = await import('node:fs');
-    const { tmpdir } = await import('node:os');
-    const { join } = await import('node:path');
-    const dir = mkdtempSync(join(tmpdir(), 'orch-'));
+    dir = mkdtempSync(join(tmpdir(), 'orch-int-'));
     const orch = await createOrchestratorAsync({
       dbPath: join(dir, 'h.db'),
-      rulesPath: join(import.meta.dirname, '..', '..', 'orchestrator', 'astro-orchestrator.md'),
+      rulesPath: RULES_PATH,
     });
     await orch.recordExecution({
       id: 't1',
@@ -63,5 +67,7 @@ describe('phase 3 integration', () => {
     });
     const stats = await orch.getHistory().stats();
     expect(stats.total).toBe(1);
+    expect(stats.byState.completed).toBe(1);
+    await orch.close();
   });
 });
