@@ -12,8 +12,9 @@ describe('WorkflowsRegistry', () => {
     expect(registry.get('feature-development')?.purpose).toContain('feature');
   });
 
-  it('throws RegistryValidationError on duplicate IDs', async () => {
+  it('throws RegistryValidationError on duplicate IDs with position context', async () => {
     const dupPath = resolve(__dirname, '../../fixtures/v5/catalog/workflows-duplicate.md');
     await expect(loadWorkflowsRegistry({ filePath: dupPath })).rejects.toThrow(RegistryValidationError);
+    await expect(loadWorkflowsRegistry({ filePath: dupPath })).rejects.toThrow(/first at/);
   });
 });

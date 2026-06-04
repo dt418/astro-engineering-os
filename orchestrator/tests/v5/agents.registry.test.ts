@@ -12,8 +12,9 @@ describe('AgentsRegistry', () => {
     expect(registry.get('architect')?.purpose).toContain('architecture');
   });
 
-  it('throws RegistryValidationError on duplicate IDs', async () => {
+  it('throws RegistryValidationError on duplicate IDs with position context', async () => {
     const dupPath = resolve(__dirname, '../../fixtures/v5/catalog/agents-duplicate.md');
     await expect(loadAgentsRegistry({ filePath: dupPath })).rejects.toThrow(RegistryValidationError);
+    await expect(loadAgentsRegistry({ filePath: dupPath })).rejects.toThrow(/first at/);
   });
 });

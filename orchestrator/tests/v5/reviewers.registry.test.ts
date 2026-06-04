@@ -12,8 +12,9 @@ describe('ReviewersRegistry', () => {
     expect(registry.get('code-reviewer')?.purpose).toContain('pull requests');
   });
 
-  it('throws RegistryValidationError on duplicate IDs', async () => {
+  it('throws RegistryValidationError on duplicate IDs with position context', async () => {
     const dupPath = resolve(__dirname, '../../fixtures/v5/catalog/reviewers-duplicate.md');
     await expect(loadReviewersRegistry({ filePath: dupPath })).rejects.toThrow(RegistryValidationError);
+    await expect(loadReviewersRegistry({ filePath: dupPath })).rejects.toThrow(/first at/);
   });
 });

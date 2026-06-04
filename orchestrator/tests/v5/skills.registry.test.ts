@@ -35,8 +35,9 @@ describe('SkillsRegistry', () => {
     expect(active.every(s => s.status === 'active')).toBe(true);
   });
 
-  it('throws RegistryValidationError on duplicate IDs', async () => {
+  it('throws RegistryValidationError on duplicate IDs with position context', async () => {
     const dupPath = resolve(__dirname, '../../fixtures/v5/catalog/skills-duplicate.md');
     await expect(loadSkillsRegistry({ filePath: dupPath })).rejects.toThrow(RegistryValidationError);
+    await expect(loadSkillsRegistry({ filePath: dupPath })).rejects.toThrow(/first at/);
   });
 });
