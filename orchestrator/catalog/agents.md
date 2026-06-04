@@ -25,3 +25,17 @@ version: 1.0.0
 status: active
 purpose: Writes and maintains user-facing documentation, READMEs, and guides.
 tags: docs, writing, content
+
+## agent: code-reviewer
+
+version: 1.0.0
+status: active
+purpose: Reviews code for correctness, style, and test coverage.
+tags: code, review, quality
+
+## agent: architecture-reviewer
+
+version: 1.0.0
+status: active
+purpose: Reviews system design, ADRs, and architectural decisions.
+tags: architecture, review, design
