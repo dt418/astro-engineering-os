@@ -50,7 +50,7 @@ export function createIntentClassifier(opts: ClassifierOptions = {}): IntentClas
       }
 
       if (matches.length === 0) {
-        return { intent: 'unknown', confidence: 0, signals: [] };
+        return { intent: 'unknown' as Intent, confidence: 0, signals: [] };
       }
 
       matches.sort((a, b) => b.weight - a.weight);

@@ -1,17 +1,15 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { z } from 'zod';
 import { parseEntities, type ParsedEntity } from '../registry/markdown-loader.js';
 import { RegistryLoadError, RegistryValidationError } from '../registry/errors.js';
-import { ALL_INTENTS, type Intent, type IntentMapping } from './types.js';
+import { IntentSchema, IntentMappingSchema, type Intent, type IntentMapping } from './types.js';
 
 export interface IntentsRegistry {
   readonly size: number;
   list(): readonly IntentMapping[];
   resolve(intent: Intent): IntentMapping | undefined;
 }
-
-const REQUIRED_FIELDS = ['skills', 'agents', 'workflows', 'reviewers'] as const;
-const VALID_INTENTS = new Set<string>(ALL_INTENTS);
 
 function parseList(raw: string | undefined): readonly string[] {
   if (!raw) return [];
@@ -20,23 +18,29 @@ function parseList(raw: string | undefined): readonly string[] {
 
 function toMapping(parsed: ParsedEntity): IntentMapping {
   const fields = parsed.fields;
-  if (!VALID_INTENTS.has(parsed.id)) {
+
+  const parsedIntent = IntentSchema.safeParse(parsed.id);
+  if (!parsedIntent.success) {
     throw new RegistryValidationError('intents', [`unknown intent "${parsed.id}"`]);
   }
-  for (const key of REQUIRED_FIELDS) {
-    if (!fields[key]) {
-      throw new RegistryValidationError('intents', [`${parsed.id}: missing required field "${key}"`]);
-    }
-  }
-  return {
-    intent: parsed.id as Intent,
+
+  const rawMapping = {
+    intent: parsed.id,
     version: fields.version ?? '0.0.0',
-    status: (fields.status as IntentMapping['status']) ?? 'active',
+    status: fields.status ?? 'active',
     skills: parseList(fields.skills),
     agents: parseList(fields.agents),
     workflows: parseList(fields.workflows),
     reviewers: parseList(fields.reviewers),
   };
+
+  const result = IntentMappingSchema.safeParse(rawMapping);
+  if (!result.success) {
+    const errors = result.error.issues.map(e => `${parsed.id}: ${e.message}`);
+    throw new RegistryValidationError('intents', errors);
+  }
+
+  return result.data;
 }
 
 export async function loadIntentsRegistry(opts?: {

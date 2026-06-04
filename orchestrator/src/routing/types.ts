@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export const ALL_INTENTS = [
   'blog',
   'docs',
@@ -11,12 +13,16 @@ export const ALL_INTENTS = [
 
 export type Intent = (typeof ALL_INTENTS)[number];
 
-export interface IntentMapping {
-  intent: Intent;
-  version: string;
-  status: 'active' | 'deprecated' | 'experimental' | 'legacy';
-  skills: readonly string[];
-  agents: readonly string[];
-  workflows: readonly string[];
-  reviewers: readonly string[];
-}
+export const IntentSchema = z.enum(ALL_INTENTS);
+
+export const IntentMappingSchema = z.object({
+  intent: IntentSchema,
+  version: z.string().min(1),
+  status: z.enum(['active', 'deprecated', 'experimental', 'legacy']),
+  skills: z.array(z.string()).min(1),
+  agents: z.array(z.string()).min(1),
+  workflows: z.array(z.string()).min(1),
+  reviewers: z.array(z.string()).min(1),
+});
+
+export type IntentMapping = z.infer<typeof IntentMappingSchema>;
