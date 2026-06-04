@@ -15,8 +15,10 @@ export function createQueue(): Queue {
     enqueue(node) {
       items.push(node);
       items.sort((a, b) => {
-        const pa = (a.input.context?.priority as number) ?? 0;
-        const pb = (b.input.context?.priority as number) ?? 0;
+        const paRaw = a.input.context?.priority;
+        const pa = typeof paRaw === 'number' ? paRaw : 0;
+        const pbRaw = b.input.context?.priority;
+        const pb = typeof pbRaw === 'number' ? pbRaw : 0;
         return pb - pa;
       });
     },
