@@ -21,10 +21,16 @@ export interface TaskInput {
   context?: Record<string, unknown>;
 }
 
+export interface TaskError {
+  code: 'TRANSIENT' | 'FATAL' | 'VALIDATION';
+  message: string;
+  cause?: unknown;
+}
+
 export interface TaskResult {
   output: unknown;
   durationMs: number;
-  error?: string;
+  error?: TaskError;
 }
 
 export interface TaskNode {

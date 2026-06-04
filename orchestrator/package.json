@@ -21,7 +21,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "tsc --watch",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "lint:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
     "better-sqlite3": "^11.0.0"

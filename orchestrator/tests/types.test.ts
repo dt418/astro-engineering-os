@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { TaskId, RoutingRule, TaskNode, TaskState } from '../src/types.js';
+import type { TaskId, RoutingRule, TaskNode, TaskState, TaskError } from '../src/types.js';
 
 describe('types', () => {
   it('TaskId is a branded string', () => {
@@ -27,5 +27,10 @@ describe('types', () => {
       attempts: 0,
     };
     expect(node.state).toBe('pending');
+  });
+
+  it('TaskError has structured shape', () => {
+    const err: TaskError = { code: 'TRANSIENT', message: 'timeout' };
+    expect(err.code).toBe('TRANSIENT');
   });
 });
