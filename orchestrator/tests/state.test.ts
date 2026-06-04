@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createStateMachine } from '../src/state.js';
+import { createStateMachine, TERMINAL_STATES } from '../src/state.js';
 import type { TaskNode, TaskId } from '../src/types.js';
 
 const makeNode = (state: TaskNode['state'] = 'pending'): TaskNode => ({
@@ -44,5 +44,11 @@ describe('StateMachine', () => {
     expect(sm.isTerminal('completed')).toBe(true);
     expect(sm.isTerminal('failed')).toBe(true);
     expect(sm.isTerminal('pending')).toBe(false);
+  });
+
+  it('exports TERMINAL_STATES', () => {
+    expect(TERMINAL_STATES.has('completed')).toBe(true);
+    expect(TERMINAL_STATES.has('failed')).toBe(true);
+    expect(TERMINAL_STATES.size).toBe(2);
   });
 });

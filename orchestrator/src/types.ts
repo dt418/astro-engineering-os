@@ -18,6 +18,7 @@ export interface RoutingRule {
   agent: string;
   priority: number;
   config?: Record<string, unknown>;
+  compiledRegex?: RegExp;
 }
 
 export interface TaskInput {

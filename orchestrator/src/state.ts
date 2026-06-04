@@ -9,7 +9,7 @@ const TRANSITIONS: Record<TaskState, TaskState[]> = {
   blocked: ['ready', 'failed'],
 };
 
-const TERMINAL_STATES: ReadonlySet<TaskState> = new Set<TaskState>([
+export const TERMINAL_STATES: ReadonlySet<TaskState> = new Set<TaskState>([
   'completed',
   'failed',
 ]);
@@ -21,9 +21,14 @@ export interface StateMachine {
 }
 
 export function createStateMachine(): StateMachine {
+  const canTransition = (from: TaskState, to: TaskState): boolean => {
+    const next = TRANSITIONS[from];
+    return next ? next.includes(to) : false;
+  };
+
   return {
     transition(node, target) {
-      if (!this.canTransition(node.state, target)) {
+      if (!canTransition(node.state, target)) {
         throw new Error(
           `Invalid transition: ${node.state} -> ${target} for ${node.id}`,
         );
@@ -33,9 +38,6 @@ export function createStateMachine(): StateMachine {
     isTerminal(state) {
       return TERMINAL_STATES.has(state);
     },
-    canTransition(from, to) {
-      const next = TRANSITIONS[from];
-      return next ? next.includes(to) : false;
-    },
+    canTransition,
   };
 }

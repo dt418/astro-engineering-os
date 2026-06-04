@@ -1,8 +1,13 @@
+import { randomUUID } from 'node:crypto';
 import type { RoutingRule } from './types.js';
+
+const RULE_HEADER = /^##\s+rule:\s+/m;
+const BULLET = /^-?\s*(\w+):\s*(.*)$/;
+const REGEX_ESCAPE = /[.+^${}()|[\]\\]/g;
 
 export function parseRules(markdown: string): RoutingRule[] {
   const rules: RoutingRule[] = [];
-  const blocks = markdown.split(/^##\s+rule:\s+/m).slice(1);
+  const blocks = markdown.split(RULE_HEADER).slice(1);
 
   for (const block of blocks) {
     const lines = block.split('\n');
@@ -10,7 +15,7 @@ export function parseRules(markdown: string): RoutingRule[] {
     if (headerLine === undefined) continue;
     const pattern = headerLine.trim();
     const rule: RoutingRule = {
-      id: pattern,
+      id: randomUUID(),
       pattern,
       agent: '',
       priority: 0,
@@ -21,7 +26,7 @@ export function parseRules(markdown: string): RoutingRule[] {
       const trimmed = rawLine.trim();
       if (!trimmed) continue;
 
-      const entryMatch = trimmed.match(/^-?\s*(\w+):\s*(.*)$/);
+      const entryMatch = trimmed.match(BULLET);
       if (!entryMatch) continue;
       const key = entryMatch[1];
       const valRaw = entryMatch[2];
@@ -35,17 +40,20 @@ export function parseRules(markdown: string): RoutingRule[] {
         continue;
       }
 
-      if (valRaw === undefined) continue;
-      const val = isNaN(Number(valRaw)) ? valRaw : Number(valRaw);
+      const val = coerceValue(valRaw);
 
       if (inConfig) {
         if (rule.config) {
           rule.config[key] = val;
         }
       } else if (key === 'agent') {
-        rule.agent = val as string;
+        rule.agent = String(val);
       } else if (key === 'priority') {
-        rule.priority = val as number;
+        const n = typeof val === 'number' ? val : Number(val);
+        if (!Number.isFinite(n) || n < 0) {
+          throw new Error(`Invalid priority for rule ${rule.id}: ${valRaw}`);
+        }
+        rule.priority = n;
       }
     }
     rules.push(rule);
@@ -54,15 +62,24 @@ export function parseRules(markdown: string): RoutingRule[] {
   return rules;
 }
 
+function coerceValue(valRaw: string): string | number | boolean {
+  if (valRaw === 'true') return true;
+  if (valRaw === 'false') return false;
+  if (valRaw !== '' && !isNaN(Number(valRaw))) return Number(valRaw);
+  return valRaw;
+}
+
 export function matchRule(
   rules: RoutingRule[],
   task: string,
 ): RoutingRule | null {
   for (const rule of rules) {
-    const escaped = rule.pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
-    const regexBody = escaped.replace(/\*/g, '.*');
-    const regex = new RegExp('^' + regexBody + '$');
-    if (regex.test(task)) return rule;
+    if (!rule.compiledRegex) {
+      const escaped = rule.pattern.replace(REGEX_ESCAPE, '\\$&');
+      const regexBody = escaped.replace(/\*/g, '.*');
+      rule.compiledRegex = new RegExp('^' + regexBody + '$');
+    }
+    if (rule.compiledRegex.test(task)) return rule;
   }
   return null;
 }
