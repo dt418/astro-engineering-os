@@ -45,7 +45,7 @@ export async function loadAgentsRegistry(opts?: {
   const issues: string[] = [];
   parsed.forEach((p, i) => {
     if (seen.has(p.id)) {
-      issues.push(`duplicate id "${p.id}" at position ${i}`);
+      issues.push(`duplicate id "${p.id}" at position ${i} (first at ${seen.get(p.id)})`);
     } else {
       seen.set(p.id, i);
     }
