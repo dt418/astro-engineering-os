@@ -25,7 +25,9 @@ src/**/*.ts           → loaders, readonly registries, classifier, factory
 |-------|---------|--------|---------|
 | Capability | What exists | `catalog/*.md` | `src/registry/*.registry.ts` |
 | Routing | What to use | `routing/intents.md` | `src/routing/intents.ts` |
-| Governance | What's allowed | (Sub-Spec 2) | (Sub-Spec 2) |
+| Governance | What's allowed | `governance/README.md` (Sub-Spec 1) → `policies.md` (Sub-Spec 2) | (Sub-Spec 2) |
+
+**Evolutionary architecture:** the governance namespace, layer purpose, and roadmap are documented in Sub-Spec 1 even though the policy engine itself is deferred. This gives OSS contributors a stable target without forcing implementation before the runtime can express the concept.
 
 **Public API shape (hybrid class + DI + factory):**
 
@@ -54,16 +56,35 @@ async function createOrchestratorV5(opts?: { basePath?: string }): Promise<Orche
 ## File inventory (14 files)
 
 ### Catalog (source of truth) — 4 files
-- `orchestrator/catalog/skills.md` — `## skill: <id>` blocks with `- key: value` bullets
-- `orchestrator/catalog/agents.md` — `## agent: <id>` blocks
-- `orchestrator/catalog/workflows.md` — `## workflow: <id>` blocks
-- `orchestrator/catalog/reviewers.md` — `## reviewer: <id>` blocks
+- `orchestrator/catalog/skills.md` — `## skill: <id>` blocks with required `version` + `status` headers and `- key: value` bullets
+- `orchestrator/catalog/agents.md` — `## agent: <id>` blocks (same shape)
+- `orchestrator/catalog/workflows.md` — `## workflow: <id>` blocks (same shape)
+- `orchestrator/catalog/reviewers.md` — `## reviewer: <id>` blocks (same shape)
+
+**Entity block format (uniform across all 4 catalogs):**
+```md
+## skill: astro-blog
+
+version: 1.0.0
+status: active
+
+purpose: ...
+tags: content, seo
+```
+
+`version` is a semver string (parsed but not strictly validated in Sub-Spec 1; defaults to `0.0.0` if missing). `status` is one of `active | deprecated | experimental | legacy` (defaults to `active` if missing). Both fields are required for forward-compat: v1/v2 workflows, deprecated skills, experimental agents all become first-class rather than retrofit.
 
 ### Routing (source of truth) — 1 file
 - `orchestrator/routing/intents.md` — `## intent: <id>` blocks referencing capability IDs
 
-### Governance (placeholder) — 1 file
-- `orchestrator/governance/README.md` — explains the namespace, points to Sub-Spec 2
+### Governance (real documentation) — 1 file
+- `orchestrator/governance/README.md` — documents:
+  - Governance layer purpose and scope
+  - Future policy engine concept
+  - Policy evaluation lifecycle (declarative → evaluated → enforced)
+  - Policy ownership (who can author, who can approve)
+  - Roadmap per sub-spec (Sub-Spec 1: namespace + docs; Sub-Spec 2: registry + evaluation; Sub-Spec 3: enforcement hooks)
+  - Rationale: "namespace exists, architecture exists, implementation deferred" — evolutionary architecture
 
 ### Source: shared loader — 1 file
 - `orchestrator/src/registry/markdown-loader.ts` — generic `parseEntities<T>(md, entityType)` parser
@@ -125,11 +146,15 @@ export class MarkdownParseError extends Error {
 ### Capability registries
 
 ```ts
+export type EntityStatus = 'active' | 'deprecated' | 'experimental' | 'legacy';
+
 export interface Skill {
   readonly id: string;
+  readonly version: string;                 // semver, defaults to '0.0.0' if missing in markdown
+  readonly status: EntityStatus;            // defaults to 'active' if missing
   readonly name: string;
   readonly description: string;
-  readonly tags: readonly string[];      // parsed from `- tags: foo, bar`
+  readonly tags: readonly string[];         // parsed from `- tags: foo, bar`
   readonly config?: Readonly<Record<string, string>>;
 }
 
@@ -142,7 +167,7 @@ export interface SkillsRegistry {
 export async function loadSkillsRegistry(opts?: { path?: string }): Promise<SkillsRegistry>
 ```
 
-Each of `agents`, `workflows`, `reviewers` mirrors this shape with its own entity type. `Agent` adds `capabilities: string[]`; `Workflow` adds `steps: string[]`; `Reviewer` adds `focus: string[]`.
+Each of `agents`, `workflows`, `reviewers` mirrors this shape with its own entity type. `Agent` adds `capabilities: string[]`; `Workflow` adds `steps: string[]`; `Reviewer` adds `focus: string[]`. All four carry `version` and `status` for forward-compat with v1/v2 workflows, deprecation, and experimental state.
 
 ### Intents registry
 
@@ -222,7 +247,10 @@ export interface ExecutionPlan {
   readonly metadata: {
     readonly generatedAt: string;          // ISO timestamp
     readonly source: 'classifier';
-    readonly signals: readonly string[];
+  };
+  readonly trace: {
+    readonly classificationSignals: readonly string[];   // matched keywords from classifier
+    readonly resolvedIntent: string;                      // echoes plan.intent for downstream consumers
   };
 }
 
@@ -250,12 +278,22 @@ export async function createOrchestratorV5(
 ): Promise<OrchestratorV5>
 ```
 
+**`createOrchestratorV5` factory semantics:**
+1. Resolve catalog paths from `basePath` (default: `orchestrator/`)
+2. Load all four capability registries (skills, agents, workflows, reviewers) in parallel
+3. Load `intents` registry
+4. **Cross-reference validation:** for every `IntentMapping`, verify each referenced ID exists in its corresponding capability registry. On any missing reference, throw `RegistryValidationError` listing every missing reference. Fail fast.
+5. Build the `IntentClassifier` from default or user-supplied keyword rules
+6. Return a wired `OrchestratorV5` instance
+
 **`plan()` semantics:**
 1. Call `classifier.classify(input)` → `Classification`
 2. Call `intents.resolve(classification.intent)` → `IntentMapping` or undefined
 3. If undefined (e.g., `unknown` intent), throw `UnknownIntentError`
 4. Resolve each ID against the corresponding capability registry; throw `UnresolvedCapabilityError` for any missing ID
-5. Return `ExecutionPlan` with resolved entities, confidence, and metadata
+5. Return `ExecutionPlan` with resolved entities, confidence, and trace
+
+**`trace` rationale:** `classificationSignals` + `resolvedIntent` are the audit trail that bridges to Sub-Spec 2 (parallel execution) and Sub-Spec 3 (self-improving routing via execution history feedback). The trace is always populated; consumers can ignore it but cannot lose it.
 
 ## Data flow
 
@@ -277,10 +315,11 @@ The plan is a value object — no side effects, no execution. Sub-Spec 2's `runt
 |-------------|-----------|---------|
 | `MarkdownParseError` | `parseEntities` | `line`, `entityType`, `message` |
 | `LoaderError` | registry loaders | wrapped `MarkdownParseError` + `path` |
+| `RegistryValidationError` | `createOrchestratorV5` factory | `missing: { kind, id }[]` (every broken reference) |
 | `UnknownIntentError` | `OrchestratorV5.plan` | `intent`, `knownIntents` |
 | `UnresolvedCapabilityError` | `OrchestratorV5.plan` | `intent`, `missing: { kind, id }[]` |
 
-All errors are exported from `src/orchestrator-v5.ts` and re-exported from a barrel. Duplicate IDs across all entity types (capability + intent) throw `MarkdownParseError` — no warnings. **Fail fast > silent ambiguity** (per architect review).
+All errors are exported from `src/orchestrator-v5.ts` and re-exported from a barrel. Duplicate IDs across all entity types (capability + intent) throw `MarkdownParseError` — no warnings. **Fail fast > silent ambiguity** (per architect review). `RegistryValidationError` is the only error thrown at factory startup; the rest are runtime errors thrown by `plan()`.
 
 ## Testing strategy
 
@@ -310,8 +349,8 @@ All errors are exported from `src/orchestrator-v5.ts` and re-exported from a bar
 
 ## Out of scope (deferred to later sub-specs)
 
-- **Sub-Spec 2** (runtime + parallel): `agent-dispatcher.ts`, `workflow-engine.ts`, `parallel-engine.ts`, `execution-pool.ts`, `conflict-resolver.ts`, `result-aggregator.ts`, `task-graph.ts`, `execution-state.ts`, `context-manager.ts`, **policy engine** (`governance/policies.md` + `src/governance/policies.ts`)
-- **Sub-Spec 3** (learning + intelligence): `execution-tracker.ts`, `feedback-collector.ts`, `routing-optimizer.ts`, `pattern-detector.ts`, `decision-engine.ts`, `adaptive-router.ts`, `context-memory.ts`, plus all `*.registry.ts` performance variants
+- **Sub-Spec 2** (runtime + parallel): `agent-dispatcher.ts`, `workflow-engine.ts`, `parallel-engine.ts`, `execution-pool.ts`, `conflict-resolver.ts`, `result-aggregator.ts`, `task-graph.ts`, `execution-state.ts`, `context-manager.ts`, **policy engine** (`governance/policies.md` + `src/governance/policies.ts` + evaluation lifecycle)
+- **Sub-Spec 3** (learning + intelligence): `execution-tracker.ts`, `feedback-collector.ts`, `routing-optimizer.ts`, `pattern-detector.ts`, `decision-engine.ts`, `adaptive-router.ts`, `context-memory.ts`, plus all `*.registry.ts` performance variants. Sub-Spec 3 also consumes `ExecutionPlan.trace` to seed the feedback loop.
 - **Migration audit, architecture validation, top-level README** — completed in a separate housekeeping pass after Sub-Spec 3
 
 ## Open decisions resolved by this spec
@@ -324,12 +363,15 @@ All errors are exported from `src/orchestrator-v5.ts` and re-exported from a bar
 | `getRegistry(name)` service locator? | Dropped. Readonly properties on the class |
 | Duplicate IDs across files? | Hard error (throw) for everything |
 | Fixture layout? | `valid/` + `invalid/` subdirs |
-| Classifier debuggability? | Return `signals: string[]` |
-| Governance in Sub-Spec 1? | No — README placeholder, engine in Sub-Spec 2 |
+| Classifier debuggability? | Return `signals: string[]` on `Classification`; full audit trail in `ExecutionPlan.trace` |
+| Governance in Sub-Spec 1? | Namespace + real documentation README; engine deferred to Sub-Spec 2 |
+| Entity version/status metadata? | Required on all four capability types. `version: semver` (default `0.0.0`), `status: active\|deprecated\|experimental\|legacy` (default `active`) |
+| Cross-reference validation timing? | Factory startup. Every `IntentMapping` reference is resolved against the corresponding capability registry. Throw `RegistryValidationError` listing all missing references |
+| Execution plan audit trail? | `ExecutionPlan.trace = { classificationSignals, resolvedIntent }` — bridges to Sub-Spec 2 execution + Sub-Spec 3 self-improving routing |
 
 ## Self-review
 
-- **Placeholders**: none. All entity types, methods, and error classes are specified.
-- **Internal consistency**: every type referenced in `OrchestratorV5` is defined. Every `load*` function returns its registry type. `plan()`'s contract matches `ExecutionPlan` shape.
-- **Scope**: foundation only — no execution, no policy, no learning. Within a single implementation plan.
-- **Ambiguity**: `unknown` intent's behavior is explicit (throw `UnknownIntentError`). Missing capability ID is explicit (throw `UnresolvedCapabilityError`).
+- **Placeholders**: none. All entity types, methods, error classes, and metadata fields are specified.
+- **Internal consistency**: every type referenced in `OrchestratorV5` is defined. Every `load*` function returns its registry type. `plan()`'s contract matches `ExecutionPlan` shape including `trace`. `Skill`/`Agent`/`Workflow`/`Reviewer` all carry `version` and `status`. `RegistryValidationError` is in the error table and referenced in factory semantics. Governance README is described in the file inventory.
+- **Scope**: foundation only — no execution, no policy engine, no learning. Within a single implementation plan.
+- **Ambiguity**: `unknown` intent's behavior is explicit (throw `UnknownIntentError`). Missing capability ID is explicit (throw `UnresolvedCapabilityError`). Cross-reference validation is explicit (throw `RegistryValidationError` at factory startup, listing every missing reference). Entity version/status defaults are explicit (`0.0.0` / `active`).
