@@ -1,5 +1,9 @@
 export type TaskId = string & { readonly __brand: 'TaskId' };
 
+export function newTaskId(): TaskId {
+  return `t-${crypto.randomUUID()}` as TaskId;
+}
+
 export type TaskState =
   | 'pending'
   | 'ready'
@@ -25,6 +29,7 @@ export interface TaskError {
   code: 'TRANSIENT' | 'FATAL' | 'VALIDATION';
   message: string;
   cause?: unknown;
+  causeMessage?: string;
 }
 
 export interface TaskResult {
@@ -47,12 +52,10 @@ export interface OrchestratorConfig {
   concurrency: number;
   dbPath: string;
   rulesPath: string;
-  agentsPath: string;
 }
 
 export const DEFAULT_CONFIG: OrchestratorConfig = {
   concurrency: 3,
   dbPath: '.orchestrator/history.db',
   rulesPath: 'orchestrator/astro-orchestrator.md',
-  agentsPath: 'agents',
 };
