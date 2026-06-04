@@ -18,24 +18,34 @@ export function parseRules(markdown: string): RoutingRule[] {
 
     let inConfig = false;
     for (const rawLine of lines.slice(1)) {
-      let trimmed = rawLine.trim();
+      const trimmed = rawLine.trim();
       if (!trimmed) continue;
-      if (trimmed.startsWith('- ')) trimmed = trimmed.slice(2);
-      if (trimmed === 'config:') {
-        inConfig = true;
-        rule.config = {};
+
+      const entryMatch = trimmed.match(/^-?\s*(\w+):\s*(.*)$/);
+      if (!entryMatch) continue;
+      const key = entryMatch[1];
+      const valRaw = entryMatch[2];
+      if (key === undefined) continue;
+
+      if (valRaw === '') {
+        if (key === 'config') {
+          inConfig = true;
+          rule.config = {};
+        }
         continue;
       }
-      const m = trimmed.match(/^(\w+):\s*(.+)$/);
-      if (!m) continue;
-      const key = m[1];
-      const valRaw = m[2];
-      if (key === undefined || valRaw === undefined) continue;
+
+      if (valRaw === undefined) continue;
       const val = isNaN(Number(valRaw)) ? valRaw : Number(valRaw);
-      if (inConfig && rule.config) {
-        rule.config[key] = val;
-      } else if (!inConfig) {
-        (rule as unknown as Record<string, unknown>)[key] = val;
+
+      if (inConfig) {
+        if (rule.config) {
+          rule.config[key] = val;
+        }
+      } else if (key === 'agent') {
+        rule.agent = val as string;
+      } else if (key === 'priority') {
+        rule.priority = val as number;
       }
     }
     rules.push(rule);
