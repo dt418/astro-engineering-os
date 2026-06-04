@@ -31,4 +31,14 @@ describe('parseEntities', () => {
     expect(result[0]!.fields.status).toBe('active');
     expect(result[2]!.fields.status).toBe('experimental');
   });
+
+  it('supports multi-line field values via indentation', () => {
+    const md = readFileSync(`${FIXTURES}/valid/multi-line.md`, 'utf-8');
+    const result = parseEntities(md, 'skill');
+
+    expect(result).toHaveLength(1);
+    expect(result[0]!.fields.purpose).toBe(
+      'Build a content-first blog.\nSupports RSS, MDX, and content collections.\nOptimized for SEO and Core Web Vitals.'
+    );
+  });
 });
