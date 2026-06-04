@@ -21,4 +21,14 @@ describe('parseEntities', () => {
       },
     ]);
   });
+
+  it('parses multiple entities of the same type', () => {
+    const md = readFileSync(`${FIXTURES}/valid/multiple-entities.md`, 'utf-8');
+    const result = parseEntities(md, 'skill');
+
+    expect(result).toHaveLength(3);
+    expect(result.map(e => e.id)).toEqual(['astro-blog', 'astro-docs', 'astro-saas']);
+    expect(result[0]!.fields.status).toBe('active');
+    expect(result[2]!.fields.status).toBe('experimental');
+  });
 });
