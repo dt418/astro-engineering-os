@@ -41,3 +41,27 @@ describe('phase 2 integration', () => {
     expect(results[0]!.result?.output).toBeDefined();
   });
 });
+
+describe('phase 3 integration', () => {
+  it('async orchestrator records to history', async () => {
+    const { createOrchestratorAsync } = await import('../src/index.js');
+    const { mkdtempSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'orch-'));
+    const orch = await createOrchestratorAsync({
+      dbPath: join(dir, 'h.db'),
+      rulesPath: join(import.meta.dirname, '..', '..', 'orchestrator', 'astro-orchestrator.md'),
+    });
+    await orch.recordExecution({
+      id: 't1',
+      task: 'test',
+      rule: 'r',
+      state: 'completed',
+      durationMs: 50,
+      attempts: 1,
+    });
+    const stats = await orch.getHistory().stats();
+    expect(stats.total).toBe(1);
+  });
+});
