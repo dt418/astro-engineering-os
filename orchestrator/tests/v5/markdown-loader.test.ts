@@ -41,4 +41,13 @@ describe('parseEntities', () => {
       'Build a content-first blog.\nSupports RSS, MDX, and content collections.\nOptimized for SEO and Core Web Vitals.'
     );
   });
+
+  it('strips HTML comments before parsing', () => {
+    const md = readFileSync(`${FIXTURES}/valid/with-comments.md`, 'utf-8');
+    const result = parseEntities(md, 'skill');
+
+    expect(result).toHaveLength(1);
+    expect(result[0]!.fields.status).toBe('active');
+    expect(Object.keys(result[0]!.fields)).toEqual(['version', 'status', 'purpose']);
+  });
 });
