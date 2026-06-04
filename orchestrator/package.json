@@ -19,6 +19,7 @@
   "scripts": {
     "build": "tsc",
     "postbuild": "chmod +x dist/bin.js",
+    "start:mcp": "node dist/mcp/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "tsc --watch",

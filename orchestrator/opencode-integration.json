@@ -1,0 +1,11 @@
+{
+  "name": "astro-orchestrator",
+  "version": "0.1.0",
+  "type": "mcp-server",
+  "entry": "./dist/mcp/server.js",
+  "tools": [
+    { "name": "run_task", "description": "Run a task" },
+    { "name": "list_tasks", "description": "List rules" },
+    { "name": "get_status", "description": "Get status" }
+  ]
+}
