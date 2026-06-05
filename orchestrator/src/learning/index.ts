@@ -8,3 +8,6 @@ export * from './patterns/types.js';
 export * from './patterns/thresholds.js';
 export * from './patterns/detector.js';
 export * from './recommendations/engine.js';
+export * from './governance/tickets.js';
+export * from './governance/audit.js';
+export * from './governance/layer.js';
