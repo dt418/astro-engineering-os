@@ -1,8 +1,10 @@
 # Sub-Spec 3: Learning + Self-Improving Routing
 
-**Status:** Design Complete
+**Status:** ✅ **Shipped** (2026-06-05)
 **Date:** 2026-06-05
 **Author:** Architect Agent
+**Implementation:** 12/12 tasks complete on branch `feat/orchestrator-sub-spec-3-learning`
+**Tests:** 243 / 243 passing · lint clean · build success
 
 ---
 
@@ -661,5 +663,40 @@ Each phase is independently testable and deployable.
 **Extended dependencies:**
 - `history.ts` — telemetry storage integration
 - `execution-events.ts` — event emission integration
+
+---
+
+## 17. Implementation Notes (post-ship)
+
+### 17.1 Storage decision
+
+The 3-tier SQLite fallback (`better-sqlite3 > sql.js > in-memory`) is **designed but not wired**. The shipped `TelemetryStore` is in-memory only; the `createTelemetryStore({ dbPath })` factory validates the path and returns an in-memory store. The interface is stable enough to drop in a SQLite implementation without changing callers.
+
+### 17.2 Event-type discrimination
+
+`EXECUTION_EVENT_TYPES`, `CLASSIFICATION_EVENT_TYPES`, `REVIEWER_EVENT_TYPES` are exported as `as const` arrays from `events.ts`. The `isExecutionEvent` / `isClassificationEvent` predicates consume these arrays, replacing the original `type.startsWith('execution.')` string-prefix check. This eliminates drift between event creation and event filtering.
+
+### 17.3 Collector re-entrancy
+
+The `TelemetryCollector` uses promise chaining (`flushPromise`) rather than a boolean `flushing` flag. Concurrent `flush()` calls are serialized; the second call awaits the first and then re-checks the queue. This was a real bug found in code review.
+
+### 17.4 Curated public surface
+
+`createLearningLayer` returns a curated `LearningLayer` interface with `emit`, `flush`, `runAnalysis`, `submitRecommendation`, `approveRecommendation`, `rejectRecommendation`, `getPendingRecommendations`, `getAuditEntries`, and an `internals` bag for advanced consumers. The factory validates `dbPath` and `intervalHours`, throwing `LearningLayerValidationError` on bad input.
+
+### 17.5 Audit trail
+
+`AuditTrail` is append-only JSONL with optional `persistPath`. On startup, `loadFromDisk()` rehydrates the in-memory ring buffer (default cap 100k entries, FIFO eviction). The governance layer always calls `await audit.addEntry(...)` so persistence is never silently skipped.
+
+### 17.6 CLI surface
+
+`analytics-cli.ts` exposes four subcommands: `analyze`, `patterns`, `recommendations`, `status`. Each requires a matching handler in `dispatchAnalyticsCommand(cmd, handlers)`. Unknown commands throw `AnalyticsCommandError` — no silent pass-through.
+
+### 17.7 Out of scope (deferred)
+
+- **REST API** (`analytics-api.ts`) — referenced in the plan file structure, not yet implemented.
+- **Wiring to `ExecutionEngine`** — the layer is shipped as a sidecar; emitting events from live execution is Sub-Spec 4.
+- **SQLite tiers** — only the in-memory store is wired; the SQLite branches are scaffolded.
+- **Per-type recommendation generators** — the plan referenced a `generators.ts` file; all 6 types are currently inline in `engine.ts` behind a single `generateFromPattern(pattern)` switch.
 
 **No new external dependencies.**
