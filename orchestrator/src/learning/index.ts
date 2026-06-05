@@ -4,3 +4,6 @@ export * from './telemetry/collector.js';
 export * from './analytics/metrics.js';
 export * from './analytics/queries.js';
 export * from './analytics/engine.js';
+export * from './patterns/types.js';
+export * from './patterns/thresholds.js';
+export * from './patterns/detector.js';
