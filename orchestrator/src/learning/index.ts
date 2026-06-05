@@ -7,3 +7,4 @@ export * from './analytics/engine.js';
 export * from './patterns/types.js';
 export * from './patterns/thresholds.js';
 export * from './patterns/detector.js';
+export * from './recommendations/engine.js';
