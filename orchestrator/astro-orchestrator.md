@@ -258,3 +258,40 @@ Reserved for Layer 3 integration:
 - Audit logging
 - Performance tracking
 - Agent performance metrics
+
+## Learning Layer (Sub-Spec 3)
+
+An **observability-first sidecar** is now part of the orchestrator package. It watches executions, detects patterns, and proposes routing improvements for human review. **No autonomous mutation** — every recommendation is human-governed.
+
+### What it gives you
+
+- **Telemetry** — every `execution.*`, `classification.*`, `reviewer.*`, and `workflow.completed` event is captured via an in-memory `TelemetryCollector` (auto-flush at 10 events, re-entrancy-safe).
+- **Analytics** — duration percentiles, per-intent / per-skill success rates, classification confidence distributions.
+- **Pattern detection** — flags `high_failure_rate`, `low_confidence`, `slow_execution`, `unused_capability` against configurable thresholds.
+- **Recommendations** — six typed suggestions with confidence clamped to [0, 1].
+- **Governance** — every recommendation becomes a `GovernanceTicket` with full JSONL audit trail. `submit → approve/reject` workflow.
+- **CLI** — `pnpm analytics {analyze,patterns,recommendations,status}` with structured JSON output.
+
+### Public API
+
+```ts
+import { createLearningLayer, runAnalysis } from 'astro-orchestrator/learning';
+
+const layer = await createLearningLayer({
+  dbPath: ':memory:',
+  intervalHours: 24,
+  auditPersistPath: './audit.jsonl', // optional, survives restarts
+});
+
+layer.emit(createTelemetryEvent('execution.completed', payload, requestId, intent));
+await layer.flush();
+
+const result = await runAnalysis(layer, { timeRange: { days: 7 } });
+// result.metrics, result.patterns, result.recommendations
+
+const ticket = await layer.submitRecommendation(recommendation);
+await layer.approveRecommendation(ticket.id, 'admin');
+const audit = await layer.getAuditEntries(ticket.id);
+```
+
+See [`docs/orchestrator-v5.md`](../../docs/orchestrator-v5.md#learning-layer-sub-spec-3) for the full reference and design notes.
