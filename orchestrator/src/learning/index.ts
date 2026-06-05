@@ -56,20 +56,55 @@ import { createScheduledAnalyzer, type ScheduledAnalyzer, type AnalysisResult } 
 import type { TelemetryStoreOptions } from './telemetry/store.js';
 
 export interface LearningLayer {
-  collector: TelemetryCollector;
-  store: TelemetryStore;
-  analytics: AnalyticsEngine;
-  patterns: PatternDetector;
-  recommendations: RecommendationEngine;
-  governance: GovernanceLayer;
-  scheduler: ScheduledAnalyzer;
+  /** Emit telemetry events; flushed automatically or via flush(). */
+  emit(event: import('./telemetry/events.js').TelemetryEvent): void;
+  flush(): Promise<void>;
+  /** Run a one-shot analysis; thin wrapper over the scheduler. */
+  runAnalysis(options?: { timeRange?: { days: number } }): Promise<AnalysisResult>;
+  /** Submit a recommendation as a governance ticket. */
+  submitRecommendation(rec: import('./recommendations/engine.js').Recommendation): Promise<import('./governance/tickets.js').GovernanceTicket>;
+  /** Approve or reject a pending ticket. */
+  approveRecommendation(ticketId: string, reviewedBy?: string): Promise<void>;
+  rejectRecommendation(ticketId: string, reason: string, reviewedBy?: string): Promise<void>;
+  /** Inspect governance state. */
+  getPendingRecommendations(): Promise<import('./governance/tickets.js').GovernanceTicket[]>;
+  getAuditEntries(ticketId?: string): Promise<import('./governance/audit.js').AuditEntry[]>;
+  /** Lower-level access for advanced consumers. */
+  internals: {
+    store: TelemetryStore;
+    collector: TelemetryCollector;
+    analytics: AnalyticsEngine;
+    patterns: PatternDetector;
+    recommendations: RecommendationEngine;
+    governance: GovernanceLayer;
+    scheduler: ScheduledAnalyzer;
+  };
 }
 
 export interface LearningLayerOptions extends TelemetryStoreOptions {
   intervalHours?: number;
+  auditPersistPath?: string;
+}
+
+export class LearningLayerValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'LearningLayerValidationError';
+  }
 }
 
 export async function createLearningLayer(options: LearningLayerOptions): Promise<LearningLayer> {
+  if (!options.dbPath || typeof options.dbPath !== 'string') {
+    throw new LearningLayerValidationError(
+      'createLearningLayer: dbPath is required (use ":memory:" for in-memory)',
+    );
+  }
+  if (options.intervalHours !== undefined && (!Number.isFinite(options.intervalHours) || options.intervalHours <= 0)) {
+    throw new LearningLayerValidationError(
+      `createLearningLayer: intervalHours must be a positive number, received ${options.intervalHours}`,
+    );
+  }
+
   const store = await createTelemetryStore({
     dbPath: options.dbPath,
     retentionDays: options.retentionDays,
@@ -78,18 +113,30 @@ export async function createLearningLayer(options: LearningLayerOptions): Promis
   const analytics = createAnalyticsEngine(store);
   const patterns = createPatternDetector();
   const recommendations = createRecommendationEngine();
-  const governance = createGovernanceLayer();
+  const governance = createGovernanceLayer(
+    options.auditPersistPath ? { audit: { persistPath: options.auditPersistPath } } : {},
+  );
   const scheduler = createScheduledAnalyzer(
     { analytics, patterns, recommendations },
-    { intervalHours: options.intervalHours ?? 24 },
+    { intervalHours: options.intervalHours },
   );
 
-  return { collector, store, analytics, patterns, recommendations, governance, scheduler };
+  return {
+    emit: (event) => collector.emit(event),
+    flush: () => collector.flush(),
+    runAnalysis: (opts) => scheduler.runAnalysis(opts),
+    submitRecommendation: (rec) => governance.submitRecommendation(rec),
+    approveRecommendation: (id, by) => governance.approveRecommendation(id, by),
+    rejectRecommendation: (id, reason, by) => governance.rejectRecommendation(id, reason, by),
+    getPendingRecommendations: () => governance.getPendingRecommendations(),
+    getAuditEntries: (id) => governance.getAuditEntries(id),
+    internals: { store, collector, analytics, patterns, recommendations, governance, scheduler },
+  };
 }
 
 export async function runAnalysis(
   layer: LearningLayer,
   options?: { timeRange?: { days: number } },
 ): Promise<AnalysisResult> {
-  return layer.scheduler.runAnalysis(options);
+  return layer.runAnalysis(options);
 }

@@ -10,6 +10,22 @@ export type EventType =
   | 'reviewer.completed'
   | 'workflow.completed';
 
+export const EXECUTION_EVENT_TYPES = [
+  'execution.started',
+  'execution.completed',
+  'execution.failed',
+] as const satisfies readonly EventType[];
+
+export const CLASSIFICATION_EVENT_TYPES = [
+  'classification.confidence',
+  'classification.resolved',
+] as const satisfies readonly EventType[];
+
+export const REVIEWER_EVENT_TYPES = [
+  'reviewer.invoked',
+  'reviewer.completed',
+] as const satisfies readonly EventType[];
+
 export interface ExecutionPayload {
   taskId: string;
   taskType: 'skill' | 'workflow' | 'reviewer';

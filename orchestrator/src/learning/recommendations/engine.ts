@@ -44,19 +44,10 @@ export function createRecommendationEngine(): RecommendationEngine {
     },
 
     getRecommendationConfidence(rec) {
-      let confidence = 0.7;
-      confidence += rec.patterns.length * 0.05;
-
-      switch (rec.priority) {
-        case 'high':
-          confidence += 0.1;
-          break;
-        case 'low':
-          confidence -= 0.1;
-          break;
-      }
-
-      return Math.min(1, Math.max(0, confidence));
+      const base = 0.7;
+      const patternBoost = Math.min(rec.patterns.length * 0.05, 0.25);
+      const priorityDelta = rec.priority === 'high' ? 0.1 : rec.priority === 'low' ? -0.1 : 0;
+      return clamp01(base + patternBoost + priorityDelta);
     },
 
     explainRecommendation(rec) {
@@ -72,6 +63,10 @@ export function createRecommendationEngine(): RecommendationEngine {
       );
     },
   };
+}
+
+function clamp01(n: number): number {
+  return Math.min(1, Math.max(0, n));
 }
 
 function generateFromPattern(pattern: Pattern): Recommendation | null {

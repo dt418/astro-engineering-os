@@ -71,4 +71,25 @@ describe('ScheduledAnalyzer', () => {
     expect(secondRun).toBeInstanceOf(Date);
     expect(secondRun!.getTime()).toBeGreaterThanOrEqual(firstRun!.getTime());
   });
+
+  it('skips recommendations when includeRecommendations is false', async () => {
+    const layer = createMockLayer();
+    const analyzer = createScheduledAnalyzer(layer, { intervalHours: 24 });
+
+    const result = await analyzer.runAnalysis({ includeRecommendations: false });
+
+    expect(result.recommendations).toEqual([]);
+    expect(layer.recommendations.generateRecommendations).not.toHaveBeenCalled();
+  });
+
+  it('throws on invalid intervalHours (0)', async () => {
+    const layer = createMockLayer();
+    expect(() => createScheduledAnalyzer(layer, { intervalHours: 0 })).toThrow();
+  });
+
+  it('uses DEFAULT_INTERVAL_HOURS when not specified', async () => {
+    const layer = createMockLayer();
+    const analyzer = createScheduledAnalyzer(layer, {});
+    expect(analyzer.getLastAnalysisTime).toBeDefined();
+  });
 });

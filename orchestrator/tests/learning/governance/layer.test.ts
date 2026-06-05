@@ -66,4 +66,28 @@ describe('GovernanceLayer', () => {
     expect(pending).toHaveLength(1);
     expect(pending[0]!.status).toBe('pending');
   });
+
+  it('lists tickets by status via secondary index', async () => {
+    const t1 = await governance.submitRecommendation(makeRec({ id: 'r1' }));
+    await governance.submitRecommendation(makeRec({ id: 'r2' }));
+    await governance.approveRecommendation(t1.id);
+
+    const approved = await governance.listTicketsByStatus('approved');
+    const pending = await governance.listTicketsByStatus('pending');
+    const rejected = await governance.listTicketsByStatus('rejected');
+
+    expect(approved).toHaveLength(1);
+    expect(pending).toHaveLength(1);
+    expect(rejected).toHaveLength(0);
+  });
+
+  it('exposes audit entries for a ticket', async () => {
+    const t = await governance.submitRecommendation(makeRec());
+    await governance.approveRecommendation(t.id, 'reviewer-1');
+
+    const entries = await governance.getAuditEntries(t.id);
+
+    expect(entries).toHaveLength(2);
+    expect(entries.map((e) => e.action)).toEqual(['submitted', 'approved']);
+  });
 });

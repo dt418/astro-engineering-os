@@ -86,9 +86,10 @@ export function createAnalyticsEngine(store: TelemetryStore): AnalyticsEngine {
 }
 
 function computeExecutionMetrics(events: TelemetryEvent[]): ExecutionMetrics {
-  const completedEvents = events.filter(
-    (e): e is TelemetryEvent & { payload: { taskId: string; taskType: string; taskName: string; durationMs: number; success: boolean; error?: string } } =>
-      e.type === 'execution.completed' && isExecutionEvent(e) && e.payload.durationMs !== undefined,
+  const completedEvents = events.filter((e): e is TelemetryEvent & {
+    payload: { taskId: string; taskType: 'skill' | 'workflow' | 'reviewer'; taskName: string; durationMs: number; success?: boolean; error?: string };
+  } =>
+    e.type === 'execution.completed' && isExecutionEvent(e) && e.payload.durationMs !== undefined,
   );
 
   if (completedEvents.length === 0) {
@@ -100,7 +101,7 @@ function computeExecutionMetrics(events: TelemetryEvent[]): ExecutionMetrics {
   }
 
   const durations = completedEvents
-    .map((e) => e.payload.durationMs!)
+    .map((e) => e.payload.durationMs)
     .sort((a, b) => a - b);
   const successes = completedEvents.filter((e) => e.payload.success === true).length;
 
@@ -110,8 +111,8 @@ function computeExecutionMetrics(events: TelemetryEvent[]): ExecutionMetrics {
       p90: percentile(durations, 90),
       p99: percentile(durations, 99),
       avg: durations.reduce((a, b) => a + b, 0) / durations.length,
-      min: durations[0]!,
-      max: durations[durations.length - 1]!,
+      min: durations[0] ?? 0,
+      max: durations[durations.length - 1] ?? 0,
     },
     successRate: successes / completedEvents.length,
     failureRate: (completedEvents.length - successes) / completedEvents.length,
@@ -120,8 +121,8 @@ function computeExecutionMetrics(events: TelemetryEvent[]): ExecutionMetrics {
 
 function percentile(sorted: number[], p: number): number {
   if (sorted.length === 0) return 0;
-  const idx = Math.ceil((p / 100) * sorted.length) - 1;
-  return sorted[Math.max(0, idx)]!;
+  const idx = Math.max(0, Math.ceil((p / 100) * sorted.length) - 1);
+  return sorted[idx] ?? 0;
 }
 
 function computeIntentMetrics(events: TelemetryEvent[]): Record<string, IntentMetrics> {

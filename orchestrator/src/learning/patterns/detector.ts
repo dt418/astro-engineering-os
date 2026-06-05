@@ -6,6 +6,7 @@ import { PATTERN_THRESHOLDS } from './thresholds.js';
 export interface PatternDetector {
   detectPatterns(metrics: AnalyticsMetrics): Promise<Pattern[]>;
   getPatternsByType(type: PatternType): Promise<Pattern[]>;
+  getLastPatterns(): Pattern[];
   explainPattern(pattern: Pattern): string;
 }
 
@@ -66,6 +67,10 @@ export function createPatternDetector(): PatternDetector {
 
     async getPatternsByType(type) {
       return detectedPatterns.filter((p) => p.type === type);
+    },
+
+    getLastPatterns() {
+      return [...detectedPatterns];
     },
 
     explainPattern(pattern) {

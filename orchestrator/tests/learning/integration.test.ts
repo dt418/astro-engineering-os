@@ -47,10 +47,10 @@ describe('Learning Layer Integration', () => {
     ];
 
     for (const event of events) {
-      layer.collector.emit(event);
+      layer.emit(event);
     }
 
-    await layer.collector.flush();
+    await layer.flush();
 
     const result = await runAnalysis(layer, { timeRange: { days: 1 } });
 
@@ -60,6 +60,10 @@ describe('Learning Layer Integration', () => {
     if (result.patterns.length > 0) {
       expect(result.patterns[0]!.type).toBeDefined();
     }
+
+    // Pattern detector should expose last-detected set
+    const lastPatterns = layer.internals.patterns.getLastPatterns();
+    expect(lastPatterns.length).toBe(result.patterns.length);
   });
 
   it('recommendation workflow: submit, approve, audit', async () => {
@@ -77,13 +81,20 @@ describe('Learning Layer Integration', () => {
       actionableSteps: ['Update intents.yaml'],
     };
 
-    const ticket = await layer.governance.submitRecommendation(rec);
+    const ticket = await layer.submitRecommendation(rec);
     expect(ticket.status).toBe('pending');
 
-    await layer.governance.approveRecommendation(ticket.id, 'admin');
+    await layer.approveRecommendation(ticket.id, 'admin');
 
-    const updated = await layer.governance.getTicket(ticket.id);
+    const updated = await layer.internals.governance.getTicket(ticket.id);
     expect(updated!.status).toBe('approved');
     expect(updated!.reviewedBy).toBe('admin');
+
+    // Audit trail must record the full lifecycle
+    const auditEntries = await layer.getAuditEntries(ticket.id);
+    expect(auditEntries).toHaveLength(2);
+    expect(auditEntries[0]!.action).toBe('submitted');
+    expect(auditEntries[1]!.action).toBe('approved');
+    expect(auditEntries[1]!.performedBy).toBe('admin');
   });
 });

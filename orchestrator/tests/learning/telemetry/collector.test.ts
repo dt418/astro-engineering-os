@@ -70,4 +70,24 @@ describe('TelemetryCollector', () => {
     expect(mockStore.store).toHaveBeenCalledTimes(5);
     expect(collector.getQueueSize()).toBe(0);
   });
+
+  it('handles re-entrant flush() calls safely', async () => {
+    const mockStore = createMockStore();
+    const collector = createTelemetryCollector(mockStore);
+
+    for (let i = 0; i < 3; i++) {
+      collector.emit(
+        createTelemetryEvent('execution.started', {
+          taskId: `t${i}`,
+          taskType: 'skill',
+          taskName: `s${i}`,
+        }),
+      );
+    }
+
+    await Promise.all([collector.flush(), collector.flush(), collector.flush()]);
+
+    expect(mockStore.store).toHaveBeenCalledTimes(3);
+    expect(collector.getQueueSize()).toBe(0);
+  });
 });

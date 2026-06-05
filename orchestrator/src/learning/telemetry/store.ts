@@ -32,6 +32,13 @@ export interface TelemetryStoreOptions {
   retentionDays?: number;
 }
 
+export const TIME_RANGE_DAYS_DEFAULT = 1;
+
+export function daysToTimeRange(days: number, end: Date = new Date()): TimeRange {
+  const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000);
+  return { start, end };
+}
+
 function createInMemoryStore(): TelemetryStore {
   const store = new Map<string, TelemetryEvent>();
 
@@ -49,11 +56,13 @@ function createInMemoryStore(): TelemetryStore {
         results = results.filter((e) => e.intent === filter.intent);
       }
       if (filter.types?.length) {
-        results = results.filter((e) => filter.types!.includes(e.type));
+        const types = filter.types;
+        results = results.filter((e) => types.includes(e.type));
       }
       if (filter.timeRange) {
+        const range = filter.timeRange;
         results = results.filter(
-          (e) => e.timestamp >= filter.timeRange!.start && e.timestamp <= filter.timeRange!.end,
+          (e) => e.timestamp >= range.start && e.timestamp <= range.end,
         );
       }
 
@@ -86,8 +95,8 @@ function createInMemoryStore(): TelemetryStore {
 }
 
 export async function createTelemetryStore(options: TelemetryStoreOptions): Promise<TelemetryStore> {
-  if (options.dbPath === ':memory:') {
-    return createInMemoryStore();
+  if (!options.dbPath) {
+    throw new Error('createTelemetryStore: dbPath is required (use ":memory:" for in-memory)');
   }
   return createInMemoryStore();
 }
