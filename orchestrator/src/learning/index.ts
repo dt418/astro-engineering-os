@@ -11,3 +11,5 @@ export * from './recommendations/engine.js';
 export * from './governance/tickets.js';
 export * from './governance/audit.js';
 export * from './governance/layer.js';
+export * from './scheduler/scheduler.js';
+export * from './scheduler/analyzer.js';
