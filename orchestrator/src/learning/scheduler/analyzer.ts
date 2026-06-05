@@ -31,28 +31,31 @@ export interface AnalyzerLayer {
   recommendations: RecommendationEngine;
 }
 
-export interface ScheduledAnalyzerOptions extends SchedulerOptions {
+export interface ScheduledAnalyzerOptions extends Partial<SchedulerOptions> {
   timeRange?: { days: number };
 }
 
 export function createScheduledAnalyzer(
   layer: AnalyzerLayer,
-  options: ScheduledAnalyzerOptions = {},
+  options: ScheduledAnalyzerOptions,
 ): ScheduledAnalyzer {
   let lastAnalysisTime: Date | null = null;
-  const scheduler = createScheduler(options);
+  const scheduler = createScheduler({
+    intervalHours: options.intervalHours ?? 24,
+    enabled: options.enabled,
+  });
 
   return {
-    async runAnalysis(options: AnalysisOptions = {}) {
+    async runAnalysis(analysisOptions: AnalysisOptions = {}) {
       const startTime = Date.now();
       const timeRange =
-        options.timeRange ??
+        analysisOptions.timeRange ??
         { days: options.intervalHours ? options.intervalHours / 24 : 1 };
 
       const metrics = await layer.analytics.computeMetrics(timeRange);
       const patterns = await layer.patterns.detectPatterns(metrics);
       const recommendations =
-        options.includeRecommendations !== false
+        analysisOptions.includeRecommendations !== false
           ? await layer.recommendations.generateRecommendations(patterns)
           : [];
 

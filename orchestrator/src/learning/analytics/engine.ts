@@ -87,7 +87,8 @@ export function createAnalyticsEngine(store: TelemetryStore): AnalyticsEngine {
 
 function computeExecutionMetrics(events: TelemetryEvent[]): ExecutionMetrics {
   const completedEvents = events.filter(
-    (e) => e.type === 'execution.completed' && e.payload.durationMs !== undefined,
+    (e): e is TelemetryEvent & { payload: { taskId: string; taskType: string; taskName: string; durationMs: number; success: boolean; error?: string } } =>
+      e.type === 'execution.completed' && isExecutionEvent(e) && e.payload.durationMs !== undefined,
   );
 
   if (completedEvents.length === 0) {
@@ -127,6 +128,7 @@ function computeIntentMetrics(events: TelemetryEvent[]): Record<string, IntentMe
   const byIntent: Record<string, { total: number; successes: number; durations: number[] }> = {};
 
   for (const event of events) {
+    if (!isExecutionEvent(event)) continue;
     if (!event.intent) continue;
 
     if (!byIntent[event.intent]) {
@@ -158,6 +160,7 @@ function computeSkillMetrics(events: TelemetryEvent[]): Record<string, SkillMetr
   const bySkill: Record<string, { count: number; successes: number; durations: number[] }> = {};
 
   for (const event of events) {
+    if (!isExecutionEvent(event)) continue;
     const name = event.payload.taskName;
     if (!name) continue;
 
