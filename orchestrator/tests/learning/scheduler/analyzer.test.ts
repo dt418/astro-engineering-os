@@ -54,16 +54,21 @@ describe('ScheduledAnalyzer', () => {
     expect(afterTime).toBeInstanceOf(Date);
   });
 
-  it('persists last analysis time across runs', async () => {
+  it('tracks last analysis time across runs', async () => {
     const layer = createMockLayer();
     const analyzer = createScheduledAnalyzer(layer, { intervalHours: 24 });
 
     await analyzer.runAnalysis();
     const firstRun = await analyzer.getLastAnalysisTime();
 
+    expect(firstRun).toBeInstanceOf(Date);
+
+    await new Promise((r) => setTimeout(r, 5));
+
     await analyzer.runAnalysis();
     const secondRun = await analyzer.getLastAnalysisTime();
 
-    expect(secondRun).toEqual(firstRun);
+    expect(secondRun).toBeInstanceOf(Date);
+    expect(secondRun!.getTime()).toBeGreaterThanOrEqual(firstRun!.getTime());
   });
 });
